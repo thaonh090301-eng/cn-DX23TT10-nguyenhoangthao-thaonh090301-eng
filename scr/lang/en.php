@@ -66,6 +66,8 @@ return [
     'action.delete' => 'Delete',
     'action.save' => 'Save',
     'action.cancel' => 'Cancel',
+    'action.dismiss' => 'Dismiss',
+    'action.confirm_delete' => 'Delete',
     'action.manage_categories' => 'Manage Categories',
     'action.manage_activities' => 'Manage Activities',
     'action.manage_schedules' => 'Manage Schedules',
@@ -86,6 +88,24 @@ return [
     'accent.orange' => 'Orange',
     'density.comfortable' => 'Comfortable',
     'density.compact' => 'Compact',
+
+    'quick_add.label' => 'Quick Add',
+    'quick_add.activity' => 'Add Activity',
+    'quick_add.schedule' => 'Add Schedule',
+    'quick_add.time_log' => 'Add Time Log',
+    'quick_add.optimizer' => 'Open Optimizer',
+
+    'toast.validation_error' => 'Please fix the highlighted fields.',
+    'modal.confirmation' => 'Confirmation',
+    'modal.delete_title' => 'Delete this item?',
+    'modal.delete_message' => 'This action cannot be undone.',
+
+    'filter.search' => 'Search',
+    'filter.search_placeholder' => 'Type to filter...',
+    'filter.all_categories' => 'All categories',
+    'filter.all_statuses' => 'All statuses',
+    'filter.all_activities' => 'All activities',
+    'filter.no_results' => 'No matching records. Try clearing the filters.',
 
     'label.name' => 'Name',
     'label.color' => 'Color',

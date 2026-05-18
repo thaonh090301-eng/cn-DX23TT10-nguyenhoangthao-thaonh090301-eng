@@ -25,10 +25,31 @@
 
         <section class="panel">
             <?php if ($timeLogs === []): ?>
-                <p class="empty-state"><?= $e(__('empty.time_logs')) ?></p>
+                <div class="empty-state">
+                    <p><?= $e(__('empty.time_logs')) ?></p>
+                    <a class="button primary" href="/time-logs/create"><?= $e(__('action.new_time_log')) ?></a>
+                </div>
             <?php else: ?>
+                <div class="filter-bar" data-filter-controls data-filter-target="time-logs-table">
+                    <label class="filter-field">
+                        <span><?= $e(__('filter.search')) ?></span>
+                        <input type="search" data-filter-search placeholder="<?= $e(__('filter.search_placeholder')) ?>">
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.activity')) ?></span>
+                        <select data-filter-select="activity">
+                            <option value=""><?= $e(__('filter.all_activities')) ?></option>
+                        </select>
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.category')) ?></span>
+                        <select data-filter-select="category">
+                            <option value=""><?= $e(__('filter.all_categories')) ?></option>
+                        </select>
+                    </label>
+                </div>
                 <div class="table-wrap">
-                    <table>
+                    <table id="time-logs-table">
                         <thead>
                             <tr>
                                 <th><?= $e(__('label.activity')) ?></th>
@@ -42,11 +63,17 @@
                         </thead>
                         <tbody>
                             <?php foreach ($timeLogs as $timeLog): ?>
-                                <tr>
-                                    <td><?= $e(display_activity_title($timeLog['activity_title'])) ?></td>
+                                <?php
+                                    $activityTitle = display_activity_title($timeLog['activity_title']);
+                                    $categoryName = display_category_name($timeLog['category_name']);
+                                    $note = (string) ($timeLog['note'] ?? '');
+                                    $searchText = implode(' ', [$activityTitle, $categoryName, $note, $timeLog['started_at'], $timeLog['ended_at']]);
+                                ?>
+                                <tr data-filter-row data-search="<?= $e($searchText) ?>" data-activity="<?= $e($activityTitle) ?>" data-category="<?= $e($categoryName) ?>">
+                                    <td><?= $e($activityTitle) ?></td>
                                     <td>
                                         <span class="color-chip" style="--chip: <?= $e($timeLog['category_color']) ?>"></span>
-                                        <?= $e(display_category_name($timeLog['category_name'])) ?>
+                                        <?= $e($categoryName) ?>
                                     </td>
                                     <td><?= $e($timeLog['started_at']) ?></td>
                                     <td><?= $e($timeLog['ended_at']) ?></td>
@@ -61,6 +88,7 @@
                         </tbody>
                     </table>
                 </div>
+                <p class="empty-state filter-empty" data-filter-empty="time-logs-table" hidden><?= $e(__('filter.no_results')) ?></p>
             <?php endif; ?>
         </section>
     </main>

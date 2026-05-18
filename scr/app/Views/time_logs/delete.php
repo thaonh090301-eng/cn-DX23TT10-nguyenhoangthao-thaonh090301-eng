@@ -25,7 +25,7 @@
                 <?= $e(__('message.logged_from_to', ['start' => $timeLog['started_at'], 'end' => $timeLog['ended_at']])) ?>
             </p>
 
-            <form method="post" action="/time-logs/<?= $e($timeLog['id']) ?>">
+            <form method="post" action="/time-logs/<?= $e($timeLog['id']) ?>" data-confirm-delete data-confirm-message="<?= $e(__('message.delete_time_log')) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
                     <a class="button" href="/time-logs"><?= $e(__('action.cancel')) ?></a>

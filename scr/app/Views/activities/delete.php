@@ -30,7 +30,7 @@
                 <?= $e(__('message.activity_usage', ['schedules' => $activity['schedules_count'] ?? 0, 'time_logs' => $activity['time_logs_count'] ?? 0])) ?>
             </p>
 
-            <form method="post" action="/activities/<?= $e($activity['id']) ?>">
+            <form method="post" action="/activities/<?= $e($activity['id']) ?>" data-confirm-delete data-confirm-message="<?= $e(__('message.delete_activity')) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
                     <a class="button" href="/activities"><?= $e(__('action.cancel')) ?></a>

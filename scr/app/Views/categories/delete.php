@@ -29,7 +29,7 @@
                 <?= $e(__('message.category_has_activities', ['count' => $category['activities_count']])) ?>
             </p>
 
-            <form method="post" action="/categories/<?= $e($category['id']) ?>">
+            <form method="post" action="/categories/<?= $e($category['id']) ?>" data-confirm-delete data-confirm-message="<?= $e(__('message.delete_category')) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
                     <a class="button" href="/categories"><?= $e(__('action.cancel')) ?></a>

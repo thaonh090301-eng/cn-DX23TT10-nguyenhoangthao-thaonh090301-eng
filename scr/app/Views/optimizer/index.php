@@ -110,7 +110,10 @@
             </div>
 
             <?php if ($suggestions === []): ?>
-                <p class="empty-state"><?= $e(__('optimizer.empty')) ?></p>
+                <div class="empty-state">
+                    <p><?= $e(__('optimizer.empty')) ?></p>
+                    <a class="button primary" href="#optimizer-form"><?= $e(__('action.find_suggestions')) ?></a>
+                </div>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>

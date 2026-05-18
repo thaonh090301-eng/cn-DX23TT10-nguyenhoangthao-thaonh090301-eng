@@ -25,10 +25,31 @@
 
         <section class="panel">
             <?php if ($activities === []): ?>
-                <p class="empty-state"><?= $e(__('empty.activities')) ?></p>
+                <div class="empty-state">
+                    <p><?= $e(__('empty.activities')) ?></p>
+                    <a class="button primary" href="/activities/create"><?= $e(__('action.new_activity')) ?></a>
+                </div>
             <?php else: ?>
+                <div class="filter-bar" data-filter-controls data-filter-target="activities-table">
+                    <label class="filter-field">
+                        <span><?= $e(__('filter.search')) ?></span>
+                        <input type="search" data-filter-search placeholder="<?= $e(__('filter.search_placeholder')) ?>">
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.category')) ?></span>
+                        <select data-filter-select="category">
+                            <option value=""><?= $e(__('filter.all_categories')) ?></option>
+                        </select>
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.status')) ?></span>
+                        <select data-filter-select="status">
+                            <option value=""><?= $e(__('filter.all_statuses')) ?></option>
+                        </select>
+                    </label>
+                </div>
                 <div class="table-wrap">
-                    <table>
+                    <table id="activities-table">
                         <thead>
                             <tr>
                                 <th><?= $e(__('label.title')) ?></th>
@@ -41,15 +62,22 @@
                         </thead>
                         <tbody>
                             <?php foreach ($activities as $activity): ?>
-                                <tr>
-                                    <td><?= $e(display_activity_title($activity['title'])) ?></td>
+                                <?php
+                                    $activityTitle = display_activity_title($activity['title']);
+                                    $categoryName = display_category_name($activity['category_name']);
+                                    $priorityLabel = __('priority.' . $activity['priority']);
+                                    $statusLabel = ((int) $activity['is_active'] === 1) ? __('status.active') : __('status.inactive');
+                                    $searchText = implode(' ', [$activityTitle, $categoryName, $priorityLabel, $statusLabel]);
+                                ?>
+                                <tr data-filter-row data-search="<?= $e($searchText) ?>" data-category="<?= $e($categoryName) ?>" data-status="<?= $e($statusLabel) ?>">
+                                    <td><?= $e($activityTitle) ?></td>
                                     <td>
                                         <span class="color-chip" style="--chip: <?= $e($activity['category_color']) ?>"></span>
-                                        <?= $e(display_category_name($activity['category_name'])) ?>
+                                        <?= $e($categoryName) ?>
                                     </td>
-                                    <td><?= $e(__('priority.' . $activity['priority'])) ?></td>
+                                    <td><?= $e($priorityLabel) ?></td>
                                     <td><?= $e($activity['estimated_minutes']) ?> <?= $e(__('unit.min')) ?></td>
-                                    <td><?= ((int) $activity['is_active'] === 1) ? $e(__('status.active')) : $e(__('status.inactive')) ?></td>
+                                    <td><?= $e($statusLabel) ?></td>
                                     <td class="actions">
                                         <a href="/activities/<?= $e($activity['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
                                         <a class="danger-link" href="/activities/<?= $e($activity['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
@@ -59,6 +87,7 @@
                         </tbody>
                     </table>
                 </div>
+                <p class="empty-state filter-empty" data-filter-empty="activities-table" hidden><?= $e(__('filter.no_results')) ?></p>
             <?php endif; ?>
         </section>
     </main>

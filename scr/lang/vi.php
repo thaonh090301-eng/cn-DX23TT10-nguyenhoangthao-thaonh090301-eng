@@ -66,6 +66,8 @@ return [
     'action.delete' => 'Xóa',
     'action.save' => 'Lưu',
     'action.cancel' => 'Hủy',
+    'action.dismiss' => 'Đóng',
+    'action.confirm_delete' => 'Xóa',
     'action.manage_categories' => 'Quản lý danh mục',
     'action.manage_activities' => 'Quản lý hoạt động',
     'action.manage_schedules' => 'Quản lý lịch',
@@ -86,6 +88,24 @@ return [
     'accent.orange' => 'Cam',
     'density.comfortable' => 'Thoải mái',
     'density.compact' => 'Gọn',
+
+    'quick_add.label' => 'Thêm nhanh',
+    'quick_add.activity' => 'Thêm hoạt động',
+    'quick_add.schedule' => 'Thêm lịch',
+    'quick_add.time_log' => 'Thêm nhật ký',
+    'quick_add.optimizer' => 'Mở gợi ý tối ưu',
+
+    'toast.validation_error' => 'Vui lòng kiểm tra các trường được báo lỗi.',
+    'modal.confirmation' => 'Xác nhận',
+    'modal.delete_title' => 'Xóa mục này?',
+    'modal.delete_message' => 'Thao tác này không thể hoàn tác.',
+
+    'filter.search' => 'Tìm kiếm',
+    'filter.search_placeholder' => 'Nhập để lọc...',
+    'filter.all_categories' => 'Tất cả danh mục',
+    'filter.all_statuses' => 'Tất cả trạng thái',
+    'filter.all_activities' => 'Tất cả hoạt động',
+    'filter.no_results' => 'Không có dữ liệu phù hợp. Hãy thử xóa bộ lọc.',
 
     'label.name' => 'Tên',
     'label.color' => 'Màu',

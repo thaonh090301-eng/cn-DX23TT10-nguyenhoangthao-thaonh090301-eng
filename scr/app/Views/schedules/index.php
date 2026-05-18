@@ -28,10 +28,31 @@
 
         <section class="panel">
             <?php if ($schedules === []): ?>
-                <p class="empty-state"><?= $e(__('empty.schedules')) ?></p>
+                <div class="empty-state">
+                    <p><?= $e(__('empty.schedules')) ?></p>
+                    <a class="button primary" href="/schedules/create"><?= $e(__('action.new_schedule')) ?></a>
+                </div>
             <?php else: ?>
+                <div class="filter-bar" data-filter-controls data-filter-target="schedules-table">
+                    <label class="filter-field">
+                        <span><?= $e(__('filter.search')) ?></span>
+                        <input type="search" data-filter-search placeholder="<?= $e(__('filter.search_placeholder')) ?>">
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.activity')) ?></span>
+                        <select data-filter-select="activity">
+                            <option value=""><?= $e(__('filter.all_activities')) ?></option>
+                        </select>
+                    </label>
+                    <label class="filter-field">
+                        <span><?= $e(__('label.status')) ?></span>
+                        <select data-filter-select="status">
+                            <option value=""><?= $e(__('filter.all_statuses')) ?></option>
+                        </select>
+                    </label>
+                </div>
                 <div class="table-wrap">
-                    <table>
+                    <table id="schedules-table">
                         <thead>
                             <tr>
                                 <th><?= $e(__('label.title')) ?></th>
@@ -45,16 +66,23 @@
                         </thead>
                         <tbody>
                             <?php foreach ($schedules as $schedule): ?>
-                                <tr>
-                                    <td><?= $e(display_activity_title($schedule['title'])) ?></td>
-                                    <td><?= $e(display_activity_title($schedule['activity_title'])) ?></td>
+                                <?php
+                                    $scheduleTitle = display_activity_title($schedule['title']);
+                                    $activityTitle = display_activity_title($schedule['activity_title']);
+                                    $categoryName = display_category_name($schedule['category_name']);
+                                    $statusLabel = __('schedule_status.' . $schedule['status']);
+                                    $searchText = implode(' ', [$scheduleTitle, $activityTitle, $categoryName, $statusLabel, $schedule['start_at'], $schedule['end_at']]);
+                                ?>
+                                <tr data-filter-row data-search="<?= $e($searchText) ?>" data-activity="<?= $e($activityTitle) ?>" data-status="<?= $e($statusLabel) ?>">
+                                    <td><?= $e($scheduleTitle) ?></td>
+                                    <td><?= $e($activityTitle) ?></td>
                                     <td>
                                         <span class="color-chip" style="--chip: <?= $e($schedule['category_color']) ?>"></span>
-                                        <?= $e(display_category_name($schedule['category_name'])) ?>
+                                        <?= $e($categoryName) ?>
                                     </td>
                                     <td><?= $e($schedule['start_at']) ?></td>
                                     <td><?= $e($schedule['end_at']) ?></td>
-                                    <td><?= $e(__('schedule_status.' . $schedule['status'])) ?></td>
+                                    <td><?= $e($statusLabel) ?></td>
                                     <td class="actions">
                                         <a href="/schedules/<?= $e($schedule['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
                                         <a class="danger-link" href="/schedules/<?= $e($schedule['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
@@ -64,6 +92,7 @@
                         </tbody>
                     </table>
                 </div>
+                <p class="empty-state filter-empty" data-filter-empty="schedules-table" hidden><?= $e(__('filter.no_results')) ?></p>
             <?php endif; ?>
         </section>
     </main>

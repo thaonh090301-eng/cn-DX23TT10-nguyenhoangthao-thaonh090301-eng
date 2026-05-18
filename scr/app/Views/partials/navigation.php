@@ -101,6 +101,23 @@ $currentLocale = Lang::locale();
         <a class="button primary" href="<?= $e($workspacePage['quickHref']) ?>">
             <?= $e($workspacePage['quickLabel']) ?>
         </a>
+        <div class="quick-add">
+            <button
+                class="button quick-add-trigger"
+                type="button"
+                data-quick-add-toggle
+                aria-expanded="false"
+                aria-controls="quick-add-panel"
+            >
+                <?= $e(__('quick_add.label')) ?>
+            </button>
+            <div class="quick-add-panel" id="quick-add-panel" data-quick-add-panel hidden>
+                <a href="/activities/create"><?= $e(__('quick_add.activity')) ?></a>
+                <a href="/schedules/create"><?= $e(__('quick_add.schedule')) ?></a>
+                <a href="/time-logs/create"><?= $e(__('quick_add.time_log')) ?></a>
+                <a href="/optimizer"><?= $e(__('quick_add.optimizer')) ?></a>
+            </div>
+        </div>
         <div class="personalization">
             <button
                 class="button ghost personalization-trigger"
@@ -159,3 +176,29 @@ $currentLocale = Lang::locale();
         </div>
     </div>
 </header>
+
+<div
+    class="toast-config"
+    data-toast-validation="<?= $e(__('toast.validation_error')) ?>"
+    data-toast-dismiss="<?= $e(__('action.dismiss')) ?>"
+    hidden
+></div>
+<div class="toast-region" data-toast-region aria-live="polite" aria-atomic="false"></div>
+
+<div class="modal-backdrop" data-delete-modal hidden>
+    <section
+        class="confirm-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-message"
+    >
+        <p class="eyebrow"><?= $e(__('modal.confirmation')) ?></p>
+        <h2 id="delete-modal-title"><?= $e(__('modal.delete_title')) ?></h2>
+        <p id="delete-modal-message" data-delete-modal-message><?= $e(__('modal.delete_message')) ?></p>
+        <div class="form-actions">
+            <button class="button" type="button" data-delete-modal-cancel><?= $e(__('action.cancel')) ?></button>
+            <button class="button danger" type="button" data-delete-modal-confirm><?= $e(__('action.confirm_delete')) ?></button>
+        </div>
+    </section>
+</div>

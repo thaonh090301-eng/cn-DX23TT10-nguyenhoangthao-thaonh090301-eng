@@ -25,7 +25,10 @@
 
         <section class="panel">
             <?php if ($categories === []): ?>
-                <p class="empty-state"><?= $e(__('empty.categories')) ?></p>
+                <div class="empty-state">
+                    <p><?= $e(__('empty.categories')) ?></p>
+                    <a class="button primary" href="/categories/create"><?= $e(__('action.new_category')) ?></a>
+                </div>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>

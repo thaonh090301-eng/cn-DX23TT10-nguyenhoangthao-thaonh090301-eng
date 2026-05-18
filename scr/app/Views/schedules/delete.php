@@ -25,7 +25,7 @@
                 <?= $e(__('message.schedule_for_activity', ['activity' => display_activity_title($schedule['activity_title'])])) ?>
             </p>
 
-            <form method="post" action="/schedules/<?= $e($schedule['id']) ?>">
+            <form method="post" action="/schedules/<?= $e($schedule['id']) ?>" data-confirm-delete data-confirm-message="<?= $e(__('message.delete_schedule')) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
                     <a class="button" href="/schedules"><?= $e(__('action.cancel')) ?></a>

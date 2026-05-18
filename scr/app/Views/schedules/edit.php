@@ -2,11 +2,11 @@
 $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', substr((string) $value, 0, 16));
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Edit Schedule') ?></title>
+    <title><?= $e(__('page.edit_schedule')) ?></title>
     <link rel="stylesheet" href="../../assets/css/app.css">
 </head>
 <body>
@@ -15,8 +15,8 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Schedules</p>
-                <h1>Edit Schedule</h1>
+                <p class="eyebrow"><?= $e(__('nav.schedules')) ?></p>
+                <h1><?= $e(__('page.edit_schedule')) ?></h1>
             </div>
         </section>
 
@@ -24,7 +24,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
             <input type="hidden" name="_method" value="PUT">
 
             <label>
-                <span>Activity</span>
+                <span><?= $e(__('label.activity')) ?></span>
                 <select name="activity_id" required>
                     <?php foreach ($activities as $activity): ?>
                         <option value="<?= $e($activity['id']) ?>" <?= ((int) ($schedule['activity_id'] ?? 0) === (int) $activity['id']) ? 'selected' : '' ?>>
@@ -38,7 +38,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
             </label>
 
             <label>
-                <span>Title</span>
+                <span><?= $e(__('label.title')) ?></span>
                 <input type="text" name="title" value="<?= $e($schedule['title'] ?? '') ?>" required>
                 <?php if (!empty($errors['title'])): ?>
                     <small class="field-error"><?= $e($errors['title']) ?></small>
@@ -47,7 +47,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
 
             <div class="form-grid">
                 <label>
-                    <span>Start Time</span>
+                    <span><?= $e(__('label.start_time')) ?></span>
                     <input type="datetime-local" name="start_at" value="<?= $e($dateTimeLocal($schedule['start_at'] ?? '')) ?>" required>
                     <?php if (!empty($errors['start_at'])): ?>
                         <small class="field-error"><?= $e($errors['start_at']) ?></small>
@@ -55,7 +55,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
                 </label>
 
                 <label>
-                    <span>End Time</span>
+                    <span><?= $e(__('label.end_time')) ?></span>
                     <input type="datetime-local" name="end_at" value="<?= $e($dateTimeLocal($schedule['end_at'] ?? '')) ?>" required>
                     <?php if (!empty($errors['end_at'])): ?>
                         <small class="field-error"><?= $e($errors['end_at']) ?></small>
@@ -64,11 +64,11 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
             </div>
 
             <label>
-                <span>Status</span>
+                <span><?= $e(__('label.status')) ?></span>
                 <select name="status" required>
                     <?php foreach ($statuses as $status): ?>
                         <option value="<?= $e($status) ?>" <?= (($schedule['status'] ?? 'scheduled') === $status) ? 'selected' : '' ?>>
-                            <?= $e(ucfirst($status)) ?>
+                            <?= $e(__('schedule_status.' . $status)) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -78,13 +78,13 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
             </label>
 
             <label>
-                <span>Notes</span>
+                <span><?= $e(__('label.notes')) ?></span>
                 <textarea name="notes" rows="4"><?= $e($schedule['notes'] ?? '') ?></textarea>
             </label>
 
             <div class="form-actions">
-                <a class="button" href="/schedules">Cancel</a>
-                <button class="button primary" type="submit">Save</button>
+                <a class="button" href="/schedules"><?= $e(__('action.cancel')) ?></a>
+                <button class="button primary" type="submit"><?= $e(__('action.save')) ?></button>
             </div>
         </form>
     </main>

@@ -79,7 +79,7 @@ class ScheduleController extends Controller
         }
 
         $this->schedules->create(self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Schedule created successfully.');
+        $this->flash('success', \__('flash.schedule_created'));
 
         return $this->redirect('/schedules');
     }
@@ -116,7 +116,7 @@ class ScheduleController extends Controller
         }
 
         $this->schedules->update((int) $id, self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Schedule updated successfully.');
+        $this->flash('success', \__('flash.schedule_updated'));
 
         return $this->redirect('/schedules');
     }
@@ -133,7 +133,7 @@ class ScheduleController extends Controller
     {
         $this->findScheduleOrFail((int) $id);
         $this->schedules->delete((int) $id, self::DEMO_USER_ID);
-        $this->flash('success', 'Schedule deleted successfully.');
+        $this->flash('success', \__('flash.schedule_deleted'));
 
         return $this->redirect('/schedules');
     }
@@ -170,27 +170,27 @@ class ScheduleController extends Controller
         $errors = [];
 
         if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], self::DEMO_USER_ID) === null) {
-            $errors['activity_id'] = 'Choose a valid activity.';
+            $errors['activity_id'] = \__('validation.valid_activity');
         }
 
         if ($data['title'] === '') {
-            $errors['title'] = 'Schedule title is required.';
+            $errors['title'] = \__('validation.schedule_title_required');
         }
 
         if ($data['start_at'] === null) {
-            $errors['start_at'] = 'Start time is required.';
+            $errors['start_at'] = \__('validation.start_time_required');
         }
 
         if ($data['end_at'] === null) {
-            $errors['end_at'] = 'End time is required.';
+            $errors['end_at'] = \__('validation.end_time_required');
         }
 
         if ($data['start_at'] !== null && $data['end_at'] !== null && strtotime($data['end_at']) <= strtotime($data['start_at'])) {
-            $errors['end_at'] = 'End time must be later than start time.';
+            $errors['end_at'] = \__('validation.end_after_start');
         }
 
         if (!in_array($data['status'], self::STATUSES, true)) {
-            $errors['status'] = 'Choose a valid status.';
+            $errors['status'] = \__('validation.valid_status');
         }
 
         return $errors;
@@ -217,6 +217,6 @@ class ScheduleController extends Controller
         }
 
         http_response_code(404);
-        exit('Schedule not found.');
+        exit(\__('not_found.schedule'));
     }
 }

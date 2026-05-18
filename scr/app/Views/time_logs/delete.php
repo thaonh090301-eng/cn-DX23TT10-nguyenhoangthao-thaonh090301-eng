@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Delete Time Log') ?></title>
+    <title><?= $e(__('page.delete_time_log')) ?></title>
     <link rel="stylesheet" href="../../assets/css/app.css">
 </head>
 <body>
@@ -12,22 +12,23 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Time Logs</p>
-                <h1>Delete Time Log</h1>
+                <p class="eyebrow"><?= $e(__('nav.time_logs')) ?></p>
+                <h1><?= $e(__('page.delete_time_log')) ?></h1>
             </div>
         </section>
 
         <section class="panel form-stack">
             <p>
-                Delete the time log for <strong><?= $e($timeLog['activity_title']) ?></strong>
-                from <?= $e($timeLog['started_at']) ?> to <?= $e($timeLog['ended_at']) ?>?
+                <?= $e(__('message.delete_time_log')) ?>
+                <strong><?= $e($timeLog['activity_title']) ?></strong>
+                <?= $e(__('message.logged_from_to', ['start' => $timeLog['started_at'], 'end' => $timeLog['ended_at']])) ?>
             </p>
 
             <form method="post" action="/time-logs/<?= $e($timeLog['id']) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
-                    <a class="button" href="/time-logs">Cancel</a>
-                    <button class="button danger" type="submit">Delete</button>
+                    <a class="button" href="/time-logs"><?= $e(__('action.cancel')) ?></a>
+                    <button class="button danger" type="submit"><?= $e(__('action.delete')) ?></button>
                 </div>
             </form>
         </section>

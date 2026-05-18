@@ -54,7 +54,7 @@ class CategoryController extends Controller
 
         try {
             $this->categories->create(self::DEMO_USER_ID, $data);
-            $this->flash('success', 'Category created successfully.');
+            $this->flash('success', \__('flash.category_created'));
 
             return $this->redirect('/categories');
         } catch (PDOException) {
@@ -63,7 +63,7 @@ class CategoryController extends Controller
             return $this->view('categories/create', [
                 'title' => 'Create Category',
                 'category' => $data,
-                'errors' => ['name' => 'This category name may already exist.'],
+                'errors' => ['name' => \__('validation.category_duplicate')],
             ]);
         }
     }
@@ -97,7 +97,7 @@ class CategoryController extends Controller
 
         try {
             $this->categories->update((int) $id, self::DEMO_USER_ID, $data);
-            $this->flash('success', 'Category updated successfully.');
+            $this->flash('success', \__('flash.category_updated'));
 
             return $this->redirect('/categories');
         } catch (PDOException) {
@@ -106,7 +106,7 @@ class CategoryController extends Controller
             return $this->view('categories/edit', [
                 'title' => 'Edit Category',
                 'category' => array_merge($category, $data),
-                'errors' => ['name' => 'This category name may already exist.'],
+                'errors' => ['name' => \__('validation.category_duplicate')],
             ]);
         }
     }
@@ -132,12 +132,12 @@ class CategoryController extends Controller
             return $this->view('categories/delete', [
                 'title' => 'Delete Category',
                 'category' => $category,
-                'errors' => ['category' => 'Delete or move activities in this category first.'],
+                'errors' => ['category' => \__('validation.category_delete_blocked')],
             ]);
         }
 
         $this->categories->delete((int) $id, self::DEMO_USER_ID);
-        $this->flash('success', 'Category deleted successfully.');
+        $this->flash('success', \__('flash.category_deleted'));
 
         return $this->redirect('/categories');
     }
@@ -156,11 +156,11 @@ class CategoryController extends Controller
         $errors = [];
 
         if ($data['name'] === '') {
-            $errors['name'] = 'Category name is required.';
+            $errors['name'] = \__('validation.category_name_required');
         }
 
         if (!preg_match('/^#[0-9a-fA-F]{6}$/', $data['color'])) {
-            $errors['color'] = 'Color must be a valid hex value.';
+            $errors['color'] = \__('validation.color_hex');
         }
 
         return $errors;
@@ -184,6 +184,6 @@ class CategoryController extends Controller
         }
 
         http_response_code(404);
-        exit('Category not found.');
+        exit(\__('not_found.category'));
     }
 }

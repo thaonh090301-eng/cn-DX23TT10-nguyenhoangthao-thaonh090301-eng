@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Activities') ?></title>
+    <title><?= $e(__('nav.activities')) ?></title>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Management</p>
-                <h1>Activities</h1>
+                <p class="eyebrow"><?= $e(__('section.management')) ?></p>
+                <h1><?= $e(__('nav.activities')) ?></h1>
             </div>
-            <a class="button primary" href="/activities/create">New Activity</a>
+            <a class="button primary" href="/activities/create"><?= $e(__('action.new_activity')) ?></a>
         </section>
 
         <?php if (!empty($flash['success'])): ?>
@@ -24,18 +24,18 @@
 
         <section class="panel">
             <?php if ($activities === []): ?>
-                <p class="empty-state">No activities yet. Create categories first, then add activities.</p>
+                <p class="empty-state"><?= $e(__('empty.activities')) ?></p>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Priority</th>
-                                <th>Estimate</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th><?= $e(__('label.title')) ?></th>
+                                <th><?= $e(__('label.category')) ?></th>
+                                <th><?= $e(__('label.priority')) ?></th>
+                                <th><?= $e(__('label.estimate')) ?></th>
+                                <th><?= $e(__('label.status')) ?></th>
+                                <th><?= $e(__('label.actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,12 +46,12 @@
                                         <span class="color-chip" style="--chip: <?= $e($activity['category_color']) ?>"></span>
                                         <?= $e($activity['category_name']) ?>
                                     </td>
-                                    <td><?= $e(ucfirst($activity['priority'])) ?></td>
-                                    <td><?= $e($activity['estimated_minutes']) ?> min</td>
-                                    <td><?= ((int) $activity['is_active'] === 1) ? 'Active' : 'Inactive' ?></td>
+                                    <td><?= $e(__('priority.' . $activity['priority'])) ?></td>
+                                    <td><?= $e($activity['estimated_minutes']) ?> <?= $e(__('unit.min')) ?></td>
+                                    <td><?= ((int) $activity['is_active'] === 1) ? $e(__('status.active')) : $e(__('status.inactive')) ?></td>
                                     <td class="actions">
-                                        <a href="/activities/<?= $e($activity['id']) ?>/edit">Edit</a>
-                                        <a class="danger-link" href="/activities/<?= $e($activity['id']) ?>/delete">Delete</a>
+                                        <a href="/activities/<?= $e($activity['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
+                                        <a class="danger-link" href="/activities/<?= $e($activity['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -60,7 +60,7 @@ class ActivityController extends Controller
         }
 
         $this->activities->create(self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Activity created successfully.');
+        $this->flash('success', \__('flash.activity_created'));
 
         return $this->redirect('/activities');
     }
@@ -97,7 +97,7 @@ class ActivityController extends Controller
         }
 
         $this->activities->update((int) $id, self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Activity updated successfully.');
+        $this->flash('success', \__('flash.activity_updated'));
 
         return $this->redirect('/activities');
     }
@@ -121,7 +121,7 @@ class ActivityController extends Controller
             return $this->view('activities/delete', [
                 'title' => 'Delete Activity',
                 'activity' => $activity,
-                'errors' => ['activity' => 'Delete or move schedules for this activity first.'],
+                'errors' => ['activity' => \__('validation.activity_delete_schedules')],
             ]);
         }
 
@@ -131,12 +131,12 @@ class ActivityController extends Controller
             return $this->view('activities/delete', [
                 'title' => 'Delete Activity',
                 'activity' => $activity,
-                'errors' => ['activity' => 'Delete time logs for this activity first.'],
+                'errors' => ['activity' => \__('validation.activity_delete_time_logs')],
             ]);
         }
 
         $this->activities->delete((int) $id, self::DEMO_USER_ID);
-        $this->flash('success', 'Activity deleted successfully.');
+        $this->flash('success', \__('flash.activity_deleted'));
 
         return $this->redirect('/activities');
     }
@@ -158,19 +158,19 @@ class ActivityController extends Controller
         $errors = [];
 
         if ($data['title'] === '') {
-            $errors['title'] = 'Activity title is required.';
+            $errors['title'] = \__('validation.activity_title_required');
         }
 
         if ($data['category_id'] <= 0 || $this->categories->findByUser($data['category_id'], self::DEMO_USER_ID) === null) {
-            $errors['category_id'] = 'Choose a valid category.';
+            $errors['category_id'] = \__('validation.valid_category');
         }
 
         if (!in_array($data['priority'], self::PRIORITIES, true)) {
-            $errors['priority'] = 'Choose a valid priority.';
+            $errors['priority'] = \__('validation.valid_priority');
         }
 
         if ($data['estimated_minutes'] <= 0) {
-            $errors['estimated_minutes'] = 'Estimated minutes must be greater than zero.';
+            $errors['estimated_minutes'] = \__('validation.estimated_minutes_positive');
         }
 
         return $errors;
@@ -197,6 +197,6 @@ class ActivityController extends Controller
         }
 
         http_response_code(404);
-        exit('Activity not found.');
+        exit(\__('not_found.activity'));
     }
 }

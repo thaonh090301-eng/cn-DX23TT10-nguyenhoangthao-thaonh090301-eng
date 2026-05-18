@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Delete Activity') ?></title>
+    <title><?= $e(__('page.delete_activity')) ?></title>
     <link rel="stylesheet" href="../../assets/css/app.css">
 </head>
 <body>
@@ -12,8 +12,8 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Activities</p>
-                <h1>Delete Activity</h1>
+                <p class="eyebrow"><?= $e(__('nav.activities')) ?></p>
+                <h1><?= $e(__('page.delete_activity')) ?></h1>
             </div>
         </section>
 
@@ -23,17 +23,17 @@
             <?php endif; ?>
 
             <p>
-                Delete <strong><?= $e($activity['title']) ?></strong>
-                from <?= $e($activity['category_name']) ?>?
-                This activity currently has <?= $e($activity['schedules_count'] ?? 0) ?> schedules
-                and <?= $e($activity['time_logs_count'] ?? 0) ?> time logs.
+                <?= $e(__('message.delete_activity')) ?>
+                <strong><?= $e($activity['title']) ?></strong>
+                <?= $e($activity['category_name']) ?>
+                <?= $e(__('message.activity_usage', ['schedules' => $activity['schedules_count'] ?? 0, 'time_logs' => $activity['time_logs_count'] ?? 0])) ?>
             </p>
 
             <form method="post" action="/activities/<?= $e($activity['id']) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
-                    <a class="button" href="/activities">Cancel</a>
-                    <button class="button danger" type="submit">Delete</button>
+                    <a class="button" href="/activities"><?= $e(__('action.cancel')) ?></a>
+                    <button class="button danger" type="submit"><?= $e(__('action.delete')) ?></button>
                 </div>
             </form>
         </section>

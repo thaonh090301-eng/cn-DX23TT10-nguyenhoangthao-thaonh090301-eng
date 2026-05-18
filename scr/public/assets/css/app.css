@@ -81,7 +81,7 @@ p {
 }
 
 .app-shell.narrow {
-    width: min(980px, 100%);
+    width: min(1120px, 100%);
 }
 
 .top-nav {
@@ -90,6 +90,13 @@ p {
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 28px;
+}
+
+.nav-links {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .top-nav a {
@@ -104,6 +111,25 @@ p {
 }
 
 .top-nav a[aria-current="page"] {
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.language-switch {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.language-switch a {
+    min-width: 36px;
+    padding-inline: 8px;
+    text-align: center;
+}
+
+.language-switch a[aria-current="true"] {
     border-color: var(--accent);
     color: var(--accent);
     font-weight: 700;
@@ -458,9 +484,22 @@ button.compact {
         gap: 8px;
     }
 
-    .top-nav a {
+    .nav-links {
+        width: 100%;
+    }
+
+    .nav-links a {
         flex: 1 1 calc(50% - 8px);
         text-align: center;
+    }
+
+    .language-switch {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .language-switch a {
+        flex: 1 1 0;
     }
 
     .page-header {
@@ -492,8 +531,12 @@ button.compact {
     }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1180px) {
     .top-nav {
+        flex-wrap: nowrap;
+    }
+
+    .nav-links {
         flex-wrap: nowrap;
     }
 }

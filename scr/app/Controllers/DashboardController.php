@@ -49,21 +49,21 @@ class DashboardController extends Controller
         if ($summary['actual_today_minutes'] > $summary['planned_today_minutes']) {
             $alerts[] = [
                 'type' => 'danger',
-                'message' => 'Actual time today is greater than planned time.',
+                'message' => \__('alert.actual_over_planned'),
             ];
         }
 
         if ($personalMinutes > $threshold) {
             $alerts[] = [
                 'type' => 'warning',
-                'message' => 'Personal or recreation time has exceeded the daily threshold.',
+                'message' => \__('alert.personal_threshold_exceeded'),
             ];
         }
 
         if ($summary['time_logs_today_count'] === 0) {
             $alerts[] = [
                 'type' => 'warning',
-                'message' => 'No time logs have been recorded today.',
+                'message' => \__('alert.no_logs_today'),
             ];
         }
 

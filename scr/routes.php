@@ -6,6 +6,7 @@ use App\Controllers\HomeController;
 use App\Controllers\ActivityController;
 use App\Controllers\CategoryController;
 use App\Controllers\DashboardController;
+use App\Controllers\LanguageController;
 use App\Controllers\OptimizerController;
 use App\Controllers\ScheduleController;
 use App\Controllers\TimeLogController;
@@ -13,6 +14,7 @@ use App\Core\Router;
 
 /** @var Router $router */
 $router->get('/', [HomeController::class, 'index']);
+$router->get('/lang', [LanguageController::class, 'change']);
 $router->get('/dashboard', [DashboardController::class, 'index']);
 $router->get('/optimizer', [OptimizerController::class, 'index']);
 $router->post('/optimizer', [OptimizerController::class, 'suggest']);

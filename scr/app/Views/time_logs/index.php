@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Time Logs') ?></title>
+    <title><?= $e(__('nav.time_logs')) ?></title>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Tracking</p>
-                <h1>Time Logs</h1>
+                <p class="eyebrow"><?= $e(__('section.tracking')) ?></p>
+                <h1><?= $e(__('nav.time_logs')) ?></h1>
             </div>
-            <a class="button primary" href="/time-logs/create">New Time Log</a>
+            <a class="button primary" href="/time-logs/create"><?= $e(__('action.new_time_log')) ?></a>
         </section>
 
         <?php if (!empty($flash['success'])): ?>
@@ -24,19 +24,19 @@
 
         <section class="panel">
             <?php if ($timeLogs === []): ?>
-                <p class="empty-state">No time logs yet. Create activities first, then record actual time.</p>
+                <p class="empty-state"><?= $e(__('empty.time_logs')) ?></p>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Activity</th>
-                                <th>Category</th>
-                                <th>Actual Start</th>
-                                <th>Actual End</th>
-                                <th>Duration</th>
-                                <th>Note</th>
-                                <th>Actions</th>
+                                <th><?= $e(__('label.activity')) ?></th>
+                                <th><?= $e(__('label.category')) ?></th>
+                                <th><?= $e(__('label.actual_start')) ?></th>
+                                <th><?= $e(__('label.actual_end')) ?></th>
+                                <th><?= $e(__('label.duration')) ?></th>
+                                <th><?= $e(__('label.note')) ?></th>
+                                <th><?= $e(__('label.actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,11 +49,11 @@
                                     </td>
                                     <td><?= $e($timeLog['started_at']) ?></td>
                                     <td><?= $e($timeLog['ended_at']) ?></td>
-                                    <td><?= $e($timeLog['duration_minutes']) ?> min</td>
+                                    <td><?= $e($timeLog['duration_minutes']) ?> <?= $e(__('unit.min')) ?></td>
                                     <td><?= $e($timeLog['note'] ?? '') ?></td>
                                     <td class="actions">
-                                        <a href="/time-logs/<?= $e($timeLog['id']) ?>/edit">Edit</a>
-                                        <a class="danger-link" href="/time-logs/<?= $e($timeLog['id']) ?>/delete">Delete</a>
+                                        <a href="/time-logs/<?= $e($timeLog['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
+                                        <a class="danger-link" href="/time-logs/<?= $e($timeLog['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

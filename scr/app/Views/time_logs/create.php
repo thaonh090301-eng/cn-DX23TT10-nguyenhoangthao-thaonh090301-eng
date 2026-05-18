@@ -2,11 +2,11 @@
 $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', substr((string) $value, 0, 16));
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Create Time Log') ?></title>
+    <title><?= $e(__('page.create_time_log')) ?></title>
     <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
@@ -15,20 +15,20 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Time Logs</p>
-                <h1>Create Time Log</h1>
+                <p class="eyebrow"><?= $e(__('nav.time_logs')) ?></p>
+                <h1><?= $e(__('page.create_time_log')) ?></h1>
             </div>
         </section>
 
         <?php if ($activities === []): ?>
-            <div class="alert danger">Create at least one activity before adding time logs.</div>
+            <div class="alert danger"><?= $e(__('message.create_activity_before_time_logs')) ?></div>
         <?php endif; ?>
 
         <form class="panel form-stack" method="post" action="/time-logs">
             <label>
-                <span>Activity</span>
+                <span><?= $e(__('label.activity')) ?></span>
                 <select name="activity_id" required>
-                    <option value="">Choose activity</option>
+                    <option value=""><?= $e(__('option.choose_activity')) ?></option>
                     <?php foreach ($activities as $activity): ?>
                         <option value="<?= $e($activity['id']) ?>" <?= ((int) ($timeLog['activity_id'] ?? 0) === (int) $activity['id']) ? 'selected' : '' ?>>
                             <?= $e($activity['title']) ?> - <?= $e($activity['category_name']) ?>
@@ -42,7 +42,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
 
             <div class="form-grid">
                 <label>
-                    <span>Actual Start</span>
+                    <span><?= $e(__('label.actual_start')) ?></span>
                     <input type="datetime-local" name="started_at" value="<?= $e($dateTimeLocal($timeLog['started_at'] ?? '')) ?>" required>
                     <?php if (!empty($errors['started_at'])): ?>
                         <small class="field-error"><?= $e($errors['started_at']) ?></small>
@@ -50,7 +50,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
                 </label>
 
                 <label>
-                    <span>Actual End</span>
+                    <span><?= $e(__('label.actual_end')) ?></span>
                     <input type="datetime-local" name="ended_at" value="<?= $e($dateTimeLocal($timeLog['ended_at'] ?? '')) ?>" required>
                     <?php if (!empty($errors['ended_at'])): ?>
                         <small class="field-error"><?= $e($errors['ended_at']) ?></small>
@@ -59,13 +59,13 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
             </div>
 
             <label>
-                <span>Note</span>
+                <span><?= $e(__('label.note')) ?></span>
                 <textarea name="note" rows="4"><?= $e($timeLog['note'] ?? '') ?></textarea>
             </label>
 
             <div class="form-actions">
-                <a class="button" href="/time-logs">Cancel</a>
-                <button class="button primary" type="submit">Create</button>
+                <a class="button" href="/time-logs"><?= $e(__('action.cancel')) ?></a>
+                <button class="button primary" type="submit"><?= $e(__('action.create')) ?></button>
             </div>
         </form>
     </main>

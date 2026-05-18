@@ -74,7 +74,7 @@ class OptimizerController extends Controller
         $activity = $this->activities->findByUser($activityId, self::DEMO_USER_ID);
 
         if ($activity === null || $startAt === null || $endAt === null || strtotime($endAt) <= strtotime($startAt)) {
-            $this->flash('danger', 'The suggested slot could not be scheduled.');
+            $this->flash('danger', \__('flash.optimizer_slot_failed'));
 
             return $this->redirect('/optimizer');
         }
@@ -82,7 +82,7 @@ class OptimizerController extends Controller
         $busySchedules = $this->optimizerRepository->busySchedulesByUser(self::DEMO_USER_ID, $startAt, $endAt);
 
         if ($busySchedules !== []) {
-            $this->flash('danger', 'That slot is no longer free. Please run suggestions again.');
+            $this->flash('danger', \__('flash.optimizer_slot_taken'));
 
             return $this->redirect('/optimizer');
         }
@@ -96,7 +96,7 @@ class OptimizerController extends Controller
             'notes' => 'Created from optimizer suggestion.',
         ]);
 
-        $this->flash('success', 'Schedule created from suggestion.');
+        $this->flash('success', \__('flash.optimizer_schedule_created'));
 
         return $this->redirect('/schedules');
     }
@@ -142,35 +142,35 @@ class OptimizerController extends Controller
         $errors = [];
 
         if ($input['activity_id'] <= 0 || $this->activities->findByUser((int) $input['activity_id'], self::DEMO_USER_ID) === null) {
-            $errors['activity_id'] = 'Choose a valid activity.';
+            $errors['activity_id'] = \__('validation.valid_activity');
         }
 
         if ($input['required_minutes'] <= 0) {
-            $errors['required_minutes'] = 'Duration must be greater than zero.';
+            $errors['required_minutes'] = \__('validation.duration_positive');
         }
 
         if (!$this->isDate($input['range_start'])) {
-            $errors['range_start'] = 'Choose a valid start date.';
+            $errors['range_start'] = \__('validation.valid_start_date');
         }
 
         if (!$this->isDate($input['range_end'])) {
-            $errors['range_end'] = 'Choose a valid end date.';
+            $errors['range_end'] = \__('validation.valid_end_date');
         }
 
         if (!isset($errors['range_start']) && !isset($errors['range_end']) && strtotime($input['range_end']) <= strtotime($input['range_start'])) {
-            $errors['range_end'] = 'Range end must be later than range start.';
+            $errors['range_end'] = \__('validation.range_end_after_start');
         }
 
         if (!$this->isTime($input['earliest_time'])) {
-            $errors['earliest_time'] = 'Choose a valid earliest time.';
+            $errors['earliest_time'] = \__('validation.valid_earliest_time');
         }
 
         if (!$this->isTime($input['latest_time'])) {
-            $errors['latest_time'] = 'Choose a valid latest time.';
+            $errors['latest_time'] = \__('validation.valid_latest_time');
         }
 
         if (!isset($errors['earliest_time']) && !isset($errors['latest_time']) && $input['latest_time'] <= $input['earliest_time']) {
-            $errors['latest_time'] = 'Latest allowed time must be later than earliest allowed time.';
+            $errors['latest_time'] = \__('validation.latest_after_earliest');
         }
 
         return $errors;

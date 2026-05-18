@@ -59,7 +59,7 @@ class TimeLogController extends Controller
         }
 
         $this->timeLogs->create(self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Time log created successfully.');
+        $this->flash('success', \__('flash.time_log_created'));
 
         return $this->redirect('/time-logs');
     }
@@ -94,7 +94,7 @@ class TimeLogController extends Controller
         }
 
         $this->timeLogs->update((int) $id, self::DEMO_USER_ID, $data);
-        $this->flash('success', 'Time log updated successfully.');
+        $this->flash('success', \__('flash.time_log_updated'));
 
         return $this->redirect('/time-logs');
     }
@@ -111,7 +111,7 @@ class TimeLogController extends Controller
     {
         $this->findTimeLogOrFail((int) $id);
         $this->timeLogs->delete((int) $id, self::DEMO_USER_ID);
-        $this->flash('success', 'Time log deleted successfully.');
+        $this->flash('success', \__('flash.time_log_deleted'));
 
         return $this->redirect('/time-logs');
     }
@@ -161,19 +161,19 @@ class TimeLogController extends Controller
         $errors = [];
 
         if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], self::DEMO_USER_ID) === null) {
-            $errors['activity_id'] = 'Choose a valid activity.';
+            $errors['activity_id'] = \__('validation.valid_activity');
         }
 
         if ($data['started_at'] === null) {
-            $errors['started_at'] = 'Actual start time is required.';
+            $errors['started_at'] = \__('validation.actual_start_required');
         }
 
         if ($data['ended_at'] === null) {
-            $errors['ended_at'] = 'Actual end time is required.';
+            $errors['ended_at'] = \__('validation.actual_end_required');
         }
 
         if ($data['started_at'] !== null && $data['ended_at'] !== null && strtotime($data['ended_at']) <= strtotime($data['started_at'])) {
-            $errors['ended_at'] = 'Actual end time must be later than actual start time.';
+            $errors['ended_at'] = \__('validation.actual_end_after_start');
         }
 
         return $errors;
@@ -199,6 +199,6 @@ class TimeLogController extends Controller
         }
 
         http_response_code(404);
-        exit('Time log not found.');
+        exit(\__('not_found.time_log'));
     }
 }

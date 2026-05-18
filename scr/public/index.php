@@ -25,6 +25,10 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
+require APP_PATH . DIRECTORY_SEPARATOR . 'Core' . DIRECTORY_SEPARATOR . 'helpers.php';
+
+\App\Core\Lang::boot(BASE_PATH);
+
 $router = new Router();
 
 require BASE_PATH . DIRECTORY_SEPARATOR . 'routes.php';

@@ -100,14 +100,14 @@ class ScheduleOptimizer
     private function reason(int $bufferMinutes, int $earlierPenalty): string
     {
         if ($bufferMinutes === 0) {
-            return 'Exact fit and no schedule overlap.';
+            return \__('optimizer.reason.exact');
         }
 
         if ($earlierPenalty <= 2) {
-            return 'Early available slot with ' . $bufferMinutes . ' free buffer minutes.';
+            return \__('optimizer.reason.early_buffer', ['minutes' => $bufferMinutes]);
         }
 
-        return 'Available gap with ' . $bufferMinutes . ' free buffer minutes and no overlap.';
+        return \__('optimizer.reason.available_buffer', ['minutes' => $bufferMinutes]);
     }
 
     private function scheduleIntervals(array $busySchedules): array

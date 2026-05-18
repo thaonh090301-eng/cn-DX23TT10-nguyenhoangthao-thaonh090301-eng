@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Delete Category') ?></title>
+    <title><?= $e(__('page.delete_category')) ?></title>
     <link rel="stylesheet" href="../../assets/css/app.css">
 </head>
 <body>
@@ -12,8 +12,8 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Categories</p>
-                <h1>Delete Category</h1>
+                <p class="eyebrow"><?= $e(__('nav.categories')) ?></p>
+                <h1><?= $e(__('page.delete_category')) ?></h1>
             </div>
         </section>
 
@@ -23,15 +23,16 @@
             <?php endif; ?>
 
             <p>
-                Delete <strong><?= $e($category['name']) ?></strong>?
-                This category currently has <?= $e($category['activities_count']) ?> activities.
+                <?= $e(__('message.delete_category')) ?>
+                <strong><?= $e($category['name']) ?></strong>
+                <?= $e(__('message.category_has_activities', ['count' => $category['activities_count']])) ?>
             </p>
 
             <form method="post" action="/categories/<?= $e($category['id']) ?>">
                 <input type="hidden" name="_method" value="DELETE">
                 <div class="form-actions">
-                    <a class="button" href="/categories">Cancel</a>
-                    <button class="button danger" type="submit">Delete</button>
+                    <a class="button" href="/categories"><?= $e(__('action.cancel')) ?></a>
+                    <button class="button danger" type="submit"><?= $e(__('action.delete')) ?></button>
                 </div>
             </form>
         </section>

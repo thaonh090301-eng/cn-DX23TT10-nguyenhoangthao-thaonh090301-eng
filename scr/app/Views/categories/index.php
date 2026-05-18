@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Categories') ?></title>
+    <title><?= $e(__('nav.categories')) ?></title>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Management</p>
-                <h1>Categories</h1>
+                <p class="eyebrow"><?= $e(__('section.management')) ?></p>
+                <h1><?= $e(__('nav.categories')) ?></h1>
             </div>
-            <a class="button primary" href="/categories/create">New Category</a>
+            <a class="button primary" href="/categories/create"><?= $e(__('action.new_category')) ?></a>
         </section>
 
         <?php if (!empty($flash['success'])): ?>
@@ -24,17 +24,17 @@
 
         <section class="panel">
             <?php if ($categories === []): ?>
-                <p class="empty-state">No categories yet. Create the first category before adding activities.</p>
+                <p class="empty-state"><?= $e(__('empty.categories')) ?></p>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Color</th>
-                                <th>Sort</th>
-                                <th>Activities</th>
-                                <th>Actions</th>
+                                <th><?= $e(__('label.name')) ?></th>
+                                <th><?= $e(__('label.color')) ?></th>
+                                <th><?= $e(__('label.sort')) ?></th>
+                                <th><?= $e(__('label.activities')) ?></th>
+                                <th><?= $e(__('label.actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,8 +48,8 @@
                                     <td><?= $e($category['sort_order']) ?></td>
                                     <td><?= $e($category['activities_count']) ?></td>
                                     <td class="actions">
-                                        <a href="/categories/<?= $e($category['id']) ?>/edit">Edit</a>
-                                        <a class="danger-link" href="/categories/<?= $e($category['id']) ?>/delete">Delete</a>
+                                        <a href="/categories/<?= $e($category['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
+                                        <a class="danger-link" href="/categories/<?= $e($category['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

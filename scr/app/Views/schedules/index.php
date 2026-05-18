@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="<?= $e(\App\Core\Lang::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e($title ?? 'Schedules') ?></title>
+    <title><?= $e(__('nav.schedules')) ?></title>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -12,12 +12,12 @@
 
         <section class="page-header">
             <div>
-                <p class="eyebrow">Management</p>
-                <h1>Schedules</h1>
+                <p class="eyebrow"><?= $e(__('section.management')) ?></p>
+                <h1><?= $e(__('nav.schedules')) ?></h1>
             </div>
             <div class="header-actions">
-                <a class="button" href="/schedules/calendar">Calendar</a>
-                <a class="button primary" href="/schedules/create">New Schedule</a>
+                <a class="button" href="/schedules/calendar"><?= $e(__('nav.calendar')) ?></a>
+                <a class="button primary" href="/schedules/create"><?= $e(__('action.new_schedule')) ?></a>
             </div>
         </section>
 
@@ -27,19 +27,19 @@
 
         <section class="panel">
             <?php if ($schedules === []): ?>
-                <p class="empty-state">No schedules yet. Create activities first, then add schedules.</p>
+                <p class="empty-state"><?= $e(__('empty.schedules')) ?></p>
             <?php else: ?>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Activity</th>
-                                <th>Category</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th><?= $e(__('label.title')) ?></th>
+                                <th><?= $e(__('label.activity')) ?></th>
+                                <th><?= $e(__('label.category')) ?></th>
+                                <th><?= $e(__('label.start')) ?></th>
+                                <th><?= $e(__('label.end')) ?></th>
+                                <th><?= $e(__('label.status')) ?></th>
+                                <th><?= $e(__('label.actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,10 +53,10 @@
                                     </td>
                                     <td><?= $e($schedule['start_at']) ?></td>
                                     <td><?= $e($schedule['end_at']) ?></td>
-                                    <td><?= $e(ucfirst($schedule['status'])) ?></td>
+                                    <td><?= $e(__('schedule_status.' . $schedule['status'])) ?></td>
                                     <td class="actions">
-                                        <a href="/schedules/<?= $e($schedule['id']) ?>/edit">Edit</a>
-                                        <a class="danger-link" href="/schedules/<?= $e($schedule['id']) ?>/delete">Delete</a>
+                                        <a href="/schedules/<?= $e($schedule['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>
+                                        <a class="danger-link" href="/schedules/<?= $e($schedule['id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

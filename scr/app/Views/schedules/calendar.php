@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $e(__('page.schedule_calendar')) ?></title>
+    <?php require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'theme_boot.php'; ?>
     <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
@@ -50,7 +51,7 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                    right: 'listWeek,timeGridDay,timeGridWeek,dayGridMonth'
                 },
                 events: '/api/schedules',
                 eventTimeFormat: {

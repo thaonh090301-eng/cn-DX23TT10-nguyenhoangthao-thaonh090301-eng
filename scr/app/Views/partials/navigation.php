@@ -101,9 +101,54 @@ $currentLocale = Lang::locale();
         <a class="button primary" href="<?= $e($workspacePage['quickHref']) ?>">
             <?= $e($workspacePage['quickLabel']) ?>
         </a>
-        <button class="button ghost theme-toggle" type="button" data-theme-toggle aria-label="<?= $e(__('ui.theme')) ?>">
-            <?= $e(__('ui.theme')) ?>
-        </button>
+        <div class="personalization">
+            <button
+                class="button ghost personalization-trigger"
+                type="button"
+                data-personalization-toggle
+                aria-expanded="false"
+                aria-controls="personalization-panel"
+            >
+                <?= $e(__('ui.theme')) ?>
+            </button>
+            <div class="personalization-panel" id="personalization-panel" data-personalization-panel hidden>
+                <div class="preference-group">
+                    <span><?= $e(__('ui.theme_mode')) ?></span>
+                    <div class="preference-options" role="group" aria-label="<?= $e(__('ui.theme_mode')) ?>">
+                        <button class="preference-option" type="button" data-preference="theme" data-value="light" aria-pressed="false">
+                            <?= $e(__('theme.light')) ?>
+                        </button>
+                        <button class="preference-option" type="button" data-preference="theme" data-value="dark" aria-pressed="false">
+                            <?= $e(__('theme.dark')) ?>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="preference-group">
+                    <span><?= $e(__('ui.accent_color')) ?></span>
+                    <div class="preference-options swatch-options" role="group" aria-label="<?= $e(__('ui.accent_color')) ?>">
+                        <?php foreach (['blue', 'purple', 'green', 'orange'] as $accent): ?>
+                            <button class="preference-option swatch-option" type="button" data-preference="accent" data-value="<?= $e($accent) ?>" aria-pressed="false">
+                                <i class="accent-swatch accent-<?= $e($accent) ?>" aria-hidden="true"></i>
+                                <?= $e(__('accent.' . $accent)) ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="preference-group">
+                    <span><?= $e(__('ui.density')) ?></span>
+                    <div class="preference-options" role="group" aria-label="<?= $e(__('ui.density')) ?>">
+                        <button class="preference-option" type="button" data-preference="density" data-value="comfortable" aria-pressed="false">
+                            <?= $e(__('density.comfortable')) ?>
+                        </button>
+                        <button class="preference-option" type="button" data-preference="density" data-value="compact" aria-pressed="false">
+                            <?= $e(__('density.compact')) ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="language-switch" aria-label="<?= $e(__('language.switcher')) ?>">
             <a href="/lang?locale=vi" <?= $currentLocale === 'vi' ? 'aria-current="true"' : '' ?>>
                 <?= $e(__('language.vi')) ?>

@@ -17,6 +17,7 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $e(__('nav.dashboard')) ?></title>
+    <?php require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'theme_boot.php'; ?>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>

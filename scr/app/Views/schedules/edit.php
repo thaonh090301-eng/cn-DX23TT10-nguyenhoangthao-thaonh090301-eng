@@ -7,6 +7,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $e(__('page.edit_schedule')) ?></title>
+    <?php require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'theme_boot.php'; ?>
     <link rel="stylesheet" href="../../assets/css/app.css">
 </head>
 <body>

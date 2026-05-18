@@ -3,6 +3,7 @@
 $activeNav = $activeNav ?? '';
 $navItems = [
     'home' => ['label' => 'Home', 'href' => '/'],
+    'dashboard' => ['label' => 'Dashboard', 'href' => '/dashboard'],
     'categories' => ['label' => 'Categories', 'href' => '/categories'],
     'activities' => ['label' => 'Activities', 'href' => '/activities'],
     'schedules' => ['label' => 'Schedules', 'href' => '/schedules'],

@@ -298,8 +298,119 @@ button.danger {
     color: #991b1b;
 }
 
+.alert.warning {
+    border-color: #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+}
+
 .empty-state {
     color: var(--muted);
+}
+
+.dashboard-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 20px;
+    box-shadow: 0 10px 24px rgba(31, 41, 55, 0.06);
+}
+
+.stat-card span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.stat-card strong {
+    color: var(--text);
+    display: block;
+    font-size: 30px;
+    line-height: 1.1;
+}
+
+.dashboard-section {
+    margin-bottom: 16px;
+}
+
+.section-heading {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.section-heading h2 {
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.threshold-note {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.alert-list {
+    display: grid;
+    gap: 10px;
+}
+
+.alert-list .alert {
+    margin-bottom: 0;
+}
+
+.split-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.category-stats {
+    display: grid;
+    gap: 16px;
+}
+
+.category-row {
+    display: grid;
+    gap: 8px;
+}
+
+.category-meta {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.category-meta span {
+    align-items: center;
+    display: inline-flex;
+}
+
+.category-bar {
+    background: #eef2f7;
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.category-bar span {
+    background: var(--chip);
+    display: block;
+    height: 100%;
+    width: var(--bar);
 }
 
 .calendar-panel {
@@ -351,5 +462,14 @@ button.danger {
 
     .header-actions .button {
         width: 100%;
+    }
+
+    .dashboard-grid,
+    .split-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        flex-direction: column;
     }
 }

@@ -16,7 +16,7 @@
             <p>
                 Category and activity management are ready for the demo user.
                 Schedule management, calendar viewing, and time logging are ready.
-                Gap analysis, dashboard, and alerts are still upcoming.
+                Dashboard statistics and basic alerts are ready. Gap analysis is still upcoming.
             </p>
         </section>
     </main>

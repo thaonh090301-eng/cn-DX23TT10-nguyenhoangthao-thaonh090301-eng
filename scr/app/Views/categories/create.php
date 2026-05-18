@@ -8,11 +8,7 @@
 </head>
 <body>
     <main class="app-shell narrow">
-        <nav class="top-nav">
-            <a href="/">Home</a>
-            <a href="/categories" aria-current="page">Categories</a>
-            <a href="/activities">Activities</a>
-        </nav>
+        <?php $activeNav = 'categories'; require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'navigation.php'; ?>
 
         <section class="page-header">
             <div>

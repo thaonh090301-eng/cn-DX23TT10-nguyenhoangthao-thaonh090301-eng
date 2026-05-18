@@ -114,6 +114,12 @@ p {
     margin-bottom: 20px;
 }
 
+.header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .panel {
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -174,6 +180,12 @@ tr:last-child td {
 .form-stack {
     display: grid;
     gap: 18px;
+}
+
+.form-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 label {
@@ -285,6 +297,33 @@ button.danger {
     color: var(--muted);
 }
 
+.calendar-panel {
+    min-height: 640px;
+}
+
+#calendar {
+    min-height: 600px;
+}
+
+.fc {
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.fc .fc-button {
+    border-color: var(--accent);
+    background: var(--accent);
+    font-weight: 700;
+}
+
+.fc .fc-button:disabled {
+    opacity: 0.6;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 24px;
+}
+
 @media (max-width: 640px) {
     .app-shell {
         padding: 16px;
@@ -296,6 +335,16 @@ button.danger {
     }
 
     .page-header .button {
+        width: 100%;
+    }
+
+    .header-actions,
+    .form-grid {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .header-actions .button {
         width: 100%;
     }
 }

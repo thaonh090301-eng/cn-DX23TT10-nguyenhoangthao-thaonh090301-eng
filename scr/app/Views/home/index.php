@@ -7,18 +7,17 @@
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-    <main class="page-shell">
+    <main class="app-shell narrow">
+        <?php $activeNav = 'home'; require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'navigation.php'; ?>
+
         <section class="intro-panel">
             <p class="eyebrow">PHP MVC Skeleton</p>
             <h1><?= $e($title ?? 'Personal Time Optimizer') ?></h1>
             <p>
                 Category and activity management are ready for the demo user.
-                Schedules, time logs, gap analysis, and dashboard alerts are still upcoming.
+                Schedule management and calendar viewing are ready. Time logs, gap analysis,
+                and dashboard alerts are still upcoming.
             </p>
-            <div class="home-actions">
-                <a class="button primary" href="/categories">Manage Categories</a>
-                <a class="button" href="/activities">Manage Activities</a>
-            </div>
         </section>
     </main>
     <script src="assets/js/app.js"></script>

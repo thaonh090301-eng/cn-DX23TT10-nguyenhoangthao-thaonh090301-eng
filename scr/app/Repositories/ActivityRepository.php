@@ -19,7 +19,10 @@ class ActivityRepository
     public function allByUser(int $userId): array
     {
         $statement = $this->db->prepare(
-            'SELECT a.*, c.name AS category_name, c.color AS category_color
+            'SELECT a.*,
+                    c.name AS category_name,
+                    c.color AS category_color,
+                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count
              FROM activities a
              INNER JOIN categories c ON c.id = a.category_id
              WHERE a.user_id = :user_id
@@ -33,7 +36,10 @@ class ActivityRepository
     public function findByUser(int $id, int $userId): ?array
     {
         $statement = $this->db->prepare(
-            'SELECT a.*, c.name AS category_name, c.color AS category_color
+            'SELECT a.*,
+                    c.name AS category_name,
+                    c.color AS category_color,
+                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count
              FROM activities a
              INNER JOIN categories c ON c.id = a.category_id
              WHERE a.id = :id AND a.user_id = :user_id

@@ -107,12 +107,24 @@ class ActivityController extends Controller
         return $this->view('activities/delete', [
             'title' => 'Delete Activity',
             'activity' => $this->findActivityOrFail((int) $id),
+            'errors' => [],
         ]);
     }
 
     public function destroy(string $id): string
     {
-        $this->findActivityOrFail((int) $id);
+        $activity = $this->findActivityOrFail((int) $id);
+
+        if ((int) $activity['schedules_count'] > 0) {
+            http_response_code(422);
+
+            return $this->view('activities/delete', [
+                'title' => 'Delete Activity',
+                'activity' => $activity,
+                'errors' => ['activity' => 'Delete or move schedules for this activity first.'],
+            ]);
+        }
+
         $this->activities->delete((int) $id, self::DEMO_USER_ID);
         $this->flash('success', 'Activity deleted successfully.');
 

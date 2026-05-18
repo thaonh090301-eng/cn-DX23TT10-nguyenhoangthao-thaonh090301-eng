@@ -1,0 +1,96 @@
+<?php
+$dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', substr((string) $value, 0, 16));
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= $e($title ?? 'Create Schedule') ?></title>
+    <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+    <main class="app-shell narrow">
+        <?php $activeNav = 'schedules'; require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'navigation.php'; ?>
+
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Schedules</p>
+                <h1>Create Schedule</h1>
+            </div>
+        </section>
+
+        <?php if ($activities === []): ?>
+            <div class="alert danger">Create at least one activity before adding schedules.</div>
+        <?php endif; ?>
+
+        <form class="panel form-stack" method="post" action="/schedules">
+            <label>
+                <span>Activity</span>
+                <select name="activity_id" required>
+                    <option value="">Choose activity</option>
+                    <?php foreach ($activities as $activity): ?>
+                        <option value="<?= $e($activity['id']) ?>" <?= ((int) ($schedule['activity_id'] ?? 0) === (int) $activity['id']) ? 'selected' : '' ?>>
+                            <?= $e($activity['title']) ?> - <?= $e($activity['category_name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['activity_id'])): ?>
+                    <small class="field-error"><?= $e($errors['activity_id']) ?></small>
+                <?php endif; ?>
+            </label>
+
+            <label>
+                <span>Title</span>
+                <input type="text" name="title" value="<?= $e($schedule['title'] ?? '') ?>" required>
+                <?php if (!empty($errors['title'])): ?>
+                    <small class="field-error"><?= $e($errors['title']) ?></small>
+                <?php endif; ?>
+            </label>
+
+            <div class="form-grid">
+                <label>
+                    <span>Start Time</span>
+                    <input type="datetime-local" name="start_at" value="<?= $e($dateTimeLocal($schedule['start_at'] ?? '')) ?>" required>
+                    <?php if (!empty($errors['start_at'])): ?>
+                        <small class="field-error"><?= $e($errors['start_at']) ?></small>
+                    <?php endif; ?>
+                </label>
+
+                <label>
+                    <span>End Time</span>
+                    <input type="datetime-local" name="end_at" value="<?= $e($dateTimeLocal($schedule['end_at'] ?? '')) ?>" required>
+                    <?php if (!empty($errors['end_at'])): ?>
+                        <small class="field-error"><?= $e($errors['end_at']) ?></small>
+                    <?php endif; ?>
+                </label>
+            </div>
+
+            <label>
+                <span>Status</span>
+                <select name="status" required>
+                    <?php foreach ($statuses as $status): ?>
+                        <option value="<?= $e($status) ?>" <?= (($schedule['status'] ?? 'scheduled') === $status) ? 'selected' : '' ?>>
+                            <?= $e(ucfirst($status)) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['status'])): ?>
+                    <small class="field-error"><?= $e($errors['status']) ?></small>
+                <?php endif; ?>
+            </label>
+
+            <label>
+                <span>Notes</span>
+                <textarea name="notes" rows="4"><?= $e($schedule['notes'] ?? '') ?></textarea>
+            </label>
+
+            <div class="form-actions">
+                <a class="button" href="/schedules">Cancel</a>
+                <button class="button primary" type="submit">Create</button>
+            </div>
+        </form>
+    </main>
+    <script src="../assets/js/app.js"></script>
+</body>
+</html>

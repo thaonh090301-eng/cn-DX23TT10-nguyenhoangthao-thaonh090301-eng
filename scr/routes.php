@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\HomeController;
 use App\Controllers\ActivityController;
 use App\Controllers\CategoryController;
+use App\Controllers\ScheduleController;
 use App\Core\Router;
 
 /** @var Router $router */
@@ -25,3 +26,14 @@ $router->get('/activities/{id}/edit', [ActivityController::class, 'edit']);
 $router->put('/activities/{id}', [ActivityController::class, 'update']);
 $router->get('/activities/{id}/delete', [ActivityController::class, 'delete']);
 $router->delete('/activities/{id}', [ActivityController::class, 'destroy']);
+
+$router->get('/schedules', [ScheduleController::class, 'index']);
+$router->get('/schedules/calendar', [ScheduleController::class, 'calendar']);
+$router->get('/schedules/create', [ScheduleController::class, 'create']);
+$router->post('/schedules', [ScheduleController::class, 'store']);
+$router->get('/schedules/{id}/edit', [ScheduleController::class, 'edit']);
+$router->put('/schedules/{id}', [ScheduleController::class, 'update']);
+$router->get('/schedules/{id}/delete', [ScheduleController::class, 'delete']);
+$router->delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
+
+$router->get('/api/schedules', [ScheduleController::class, 'api']);

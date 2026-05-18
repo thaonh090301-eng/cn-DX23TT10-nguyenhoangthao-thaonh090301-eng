@@ -6,6 +6,7 @@ use App\Controllers\HomeController;
 use App\Controllers\ActivityController;
 use App\Controllers\CategoryController;
 use App\Controllers\ScheduleController;
+use App\Controllers\TimeLogController;
 use App\Core\Router;
 
 /** @var Router $router */
@@ -37,3 +38,11 @@ $router->get('/schedules/{id}/delete', [ScheduleController::class, 'delete']);
 $router->delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 
 $router->get('/api/schedules', [ScheduleController::class, 'api']);
+
+$router->get('/time-logs', [TimeLogController::class, 'index']);
+$router->get('/time-logs/create', [TimeLogController::class, 'create']);
+$router->post('/time-logs', [TimeLogController::class, 'store']);
+$router->get('/time-logs/{id}/edit', [TimeLogController::class, 'edit']);
+$router->put('/time-logs/{id}', [TimeLogController::class, 'update']);
+$router->get('/time-logs/{id}/delete', [TimeLogController::class, 'delete']);
+$router->delete('/time-logs/{id}', [TimeLogController::class, 'destroy']);

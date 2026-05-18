@@ -7,6 +7,7 @@ $navItems = [
     'activities' => ['label' => 'Activities', 'href' => '/activities'],
     'schedules' => ['label' => 'Schedules', 'href' => '/schedules'],
     'calendar' => ['label' => 'Calendar', 'href' => '/schedules/calendar'],
+    'time_logs' => ['label' => 'Time Logs', 'href' => '/time-logs'],
 ];
 ?>
 <nav class="top-nav">

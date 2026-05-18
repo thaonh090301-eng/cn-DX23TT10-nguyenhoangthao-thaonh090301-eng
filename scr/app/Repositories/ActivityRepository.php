@@ -22,7 +22,8 @@ class ActivityRepository
             'SELECT a.*,
                     c.name AS category_name,
                     c.color AS category_color,
-                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count
+                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count,
+                    (SELECT COUNT(*) FROM time_logs tl WHERE tl.activity_id = a.id) AS time_logs_count
              FROM activities a
              INNER JOIN categories c ON c.id = a.category_id
              WHERE a.user_id = :user_id
@@ -39,7 +40,8 @@ class ActivityRepository
             'SELECT a.*,
                     c.name AS category_name,
                     c.color AS category_color,
-                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count
+                    (SELECT COUNT(*) FROM schedules s WHERE s.activity_id = a.id) AS schedules_count,
+                    (SELECT COUNT(*) FROM time_logs tl WHERE tl.activity_id = a.id) AS time_logs_count
              FROM activities a
              INNER JOIN categories c ON c.id = a.category_id
              WHERE a.id = :id AND a.user_id = :user_id

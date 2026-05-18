@@ -15,8 +15,8 @@
             <h1><?= $e($title ?? 'Personal Time Optimizer') ?></h1>
             <p>
                 Category and activity management are ready for the demo user.
-                Schedule management and calendar viewing are ready. Time logs, gap analysis,
-                and dashboard alerts are still upcoming.
+                Schedule management, calendar viewing, and time logging are ready.
+                Gap analysis, dashboard, and alerts are still upcoming.
             </p>
         </section>
     </main>

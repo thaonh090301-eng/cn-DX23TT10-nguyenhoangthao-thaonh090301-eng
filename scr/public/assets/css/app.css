@@ -232,6 +232,11 @@ textarea {
     font-weight: 400;
 }
 
+.help-text {
+    color: var(--muted);
+    font-size: 14px;
+}
+
 .form-actions {
     display: flex;
     flex-wrap: wrap;

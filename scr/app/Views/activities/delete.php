@@ -25,7 +25,8 @@
             <p>
                 Delete <strong><?= $e($activity['title']) ?></strong>
                 from <?= $e($activity['category_name']) ?>?
-                This activity currently has <?= $e($activity['schedules_count'] ?? 0) ?> schedules.
+                This activity currently has <?= $e($activity['schedules_count'] ?? 0) ?> schedules
+                and <?= $e($activity['time_logs_count'] ?? 0) ?> time logs.
             </p>
 
             <form method="post" action="/activities/<?= $e($activity['id']) ?>">

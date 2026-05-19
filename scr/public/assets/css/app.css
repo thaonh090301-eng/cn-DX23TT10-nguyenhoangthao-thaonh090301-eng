@@ -1029,6 +1029,124 @@ button.compact {
     font-size: var(--small-font-size);
 }
 
+.productivity-panel {
+    display: grid;
+    gap: var(--space-section);
+}
+
+.productivity-score-card {
+    display: grid;
+    align-items: center;
+    gap: var(--space-section);
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.productivity-score-card h2 {
+    margin: 0 0 8px;
+    font-size: var(--topbar-heading-size);
+    line-height: 1.2;
+}
+
+.productivity-score-meter {
+    display: grid;
+    place-items: center;
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, var(--panel) 58%, transparent 60%),
+        conic-gradient(var(--accent) var(--score), color-mix(in srgb, var(--line) 72%, transparent) 0);
+    box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft);
+}
+
+.productivity-score-meter strong {
+    color: var(--text);
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 0.9;
+}
+
+.productivity-score-meter span {
+    color: var(--muted);
+    font-size: var(--meta-font-size);
+    font-weight: 800;
+}
+
+.productivity-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--dashboard-gap) * 0.65);
+}
+
+.productivity-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel-muted);
+    color: var(--muted);
+    font-size: var(--small-font-size);
+    font-weight: 850;
+    padding: 7px 11px;
+}
+
+.productivity-badge.info {
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.productivity-badge.success {
+    border-color: color-mix(in srgb, var(--success) 30%, var(--line));
+    background: color-mix(in srgb, var(--success) 10%, var(--panel));
+    color: var(--success);
+}
+
+.productivity-badge.warning {
+    border-color: color-mix(in srgb, var(--warning) 32%, var(--line));
+    background: color-mix(in srgb, var(--warning) 10%, var(--panel));
+    color: var(--warning);
+}
+
+.productivity-badge.muted {
+    font-weight: 750;
+}
+
+.score-rules {
+    display: grid;
+    gap: calc(var(--dashboard-gap) * 0.55);
+}
+
+.score-rule {
+    display: grid;
+    align-items: center;
+    gap: var(--dashboard-gap);
+    grid-template-columns: minmax(0, 1fr) auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    padding: 10px 12px;
+}
+
+.score-rule span {
+    color: var(--muted);
+    font-size: var(--small-font-size);
+}
+
+.score-rule strong {
+    color: var(--muted);
+    font-size: var(--small-font-size);
+}
+
+.score-rule.positive strong {
+    color: var(--success);
+}
+
+.score-rule.negative strong {
+    color: var(--danger);
+}
+
 .alert-list {
     display: grid;
     gap: var(--dashboard-gap);
@@ -1881,6 +1999,7 @@ button.compact {
 
     .dashboard-grid,
     .split-grid,
+    .productivity-score-card,
     .assistant-grid,
     .assistant-grid.compact,
     .time-report-summary,

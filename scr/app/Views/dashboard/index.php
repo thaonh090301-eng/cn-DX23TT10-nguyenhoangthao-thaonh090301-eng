@@ -40,6 +40,40 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
             <?php endforeach; ?>
         </section>
 
+        <section class="panel dashboard-section productivity-panel">
+            <div class="productivity-score-card">
+                <div>
+                    <p class="eyebrow"><?= $e(__('dashboard.gamification_eyebrow')) ?></p>
+                    <h2><?= $e(__('dashboard.productivity_score')) ?></h2>
+                    <p><?= $e(__('dashboard.productivity_score_help')) ?></p>
+                </div>
+                <div class="productivity-score-meter" style="--score: <?= $e((int) ($productivityScore['value'] ?? 0)) ?>%">
+                    <strong><?= $e((int) ($productivityScore['value'] ?? 0)) ?></strong>
+                    <span>/100</span>
+                </div>
+            </div>
+
+            <div class="productivity-badges" aria-label="<?= $e(__('dashboard.badges_label')) ?>">
+                <?php if (($productivityBadges ?? []) === []): ?>
+                    <span class="productivity-badge muted"><?= $e(__('dashboard.badge.empty')) ?></span>
+                <?php else: ?>
+                    <?php foreach ($productivityBadges as $badge): ?>
+                        <span class="productivity-badge <?= $e($badge['type']) ?>"><?= $e($badge['label']) ?></span>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
+            <div class="score-rules">
+                <?php foreach (($productivityScore['rules'] ?? []) as $rule): ?>
+                    <?php $points = (int) $rule['points']; ?>
+                    <div class="score-rule <?= $e($rule['type']) ?>">
+                        <span><?= $e($rule['label']) ?></span>
+                        <strong><?= $points > 0 ? '+' : '' ?><?= $e($points) ?></strong>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
         <section class="panel dashboard-section">
             <div class="section-heading">
                 <div>

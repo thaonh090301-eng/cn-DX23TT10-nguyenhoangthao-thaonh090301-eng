@@ -29,7 +29,9 @@ class DashboardRepository
             'actual_week_minutes' => $this->actualMinutes($userId, $week['start'], $week['end']),
             'active_activities_count' => $this->activeActivitiesCount($userId),
             'scheduled_items_count' => $this->scheduledItemsCount($userId),
+            'scheduled_today_count' => $this->schedulesCount($userId, $today['start'], $today['end']),
             'time_logs_today_count' => $this->timeLogsCount($userId, $today['start'], $today['end']),
+            'focus_logs_today_count' => $this->focusLogsCount($userId, $today['start'], $today['end']),
         ];
     }
 
@@ -190,6 +192,47 @@ class DashboardRepository
             'user_id' => $userId,
             'start_at' => $startAt,
             'end_at' => $endAt,
+        ]);
+
+        return (int) $statement->fetchColumn();
+    }
+
+    private function focusLogsCount(int $userId, string $startAt, string $endAt): int
+    {
+        $statement = $this->db->prepare(
+            'SELECT COUNT(*)
+             FROM time_logs
+             WHERE user_id = :user_id
+                AND started_at >= :start_at
+                AND started_at < :end_at
+                AND note IN (:focus_note, :focus_note_ascii)'
+        );
+        $statement->execute([
+            'user_id' => $userId,
+            'start_at' => $startAt,
+            'end_at' => $endAt,
+            'focus_note' => 'Tạo từ chế độ tập trung',
+            'focus_note_ascii' => 'Created from focus mode.',
+        ]);
+
+        return (int) $statement->fetchColumn();
+    }
+
+    private function schedulesCount(int $userId, string $startAt, string $endAt): int
+    {
+        $statement = $this->db->prepare(
+            'SELECT COUNT(*)
+             FROM schedules
+             WHERE user_id = :user_id
+                AND start_at >= :start_at
+                AND start_at < :end_at
+                AND status <> :cancelled_status'
+        );
+        $statement->execute([
+            'user_id' => $userId,
+            'start_at' => $startAt,
+            'end_at' => $endAt,
+            'cancelled_status' => 'cancelled',
         ]);
 
         return (int) $statement->fetchColumn();

@@ -25,7 +25,7 @@ class DashboardController extends Controller
         $personalMinutes = $this->dashboard->personalOrRecreationActualMinutesToday(self::DEMO_USER_ID);
 
         return $this->view('dashboard/index', [
-            'title' => 'Dashboard',
+            'title' => \__('nav.dashboard'),
             'summary' => $summary,
             'plannedByCategory' => $this->dashboard->plannedMinutesByCategoryThisWeek(self::DEMO_USER_ID),
             'actualByCategory' => $this->dashboard->actualMinutesByCategoryThisWeek(self::DEMO_USER_ID),
@@ -60,7 +60,12 @@ class DashboardController extends Controller
             ];
         }
 
-        if ($summary['time_logs_today_count'] === 0) {
+        if ($summary['planned_today_minutes'] > 0 && $summary['time_logs_today_count'] === 0) {
+            $alerts[] = [
+                'type' => 'warning',
+                'message' => \__('alert.planned_without_actual'),
+            ];
+        } elseif ($summary['time_logs_today_count'] === 0) {
             $alerts[] = [
                 'type' => 'warning',
                 'message' => \__('alert.no_logs_today'),

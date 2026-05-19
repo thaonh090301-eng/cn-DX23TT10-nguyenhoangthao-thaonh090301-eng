@@ -22,7 +22,7 @@
             <p>
                 <?= $e(__('message.delete_time_log')) ?>
                 <strong><?= $e(display_activity_title($timeLog['activity_title'])) ?></strong>
-                <?= $e(__('message.logged_from_to', ['start' => $timeLog['started_at'], 'end' => $timeLog['ended_at']])) ?>
+                <?= $e(__('message.logged_from_to', ['start' => format_app_datetime($timeLog['started_at']), 'end' => format_app_datetime($timeLog['ended_at'])])) ?>
             </p>
 
             <form method="post" action="/time-logs/<?= $e($timeLog['id']) ?>" data-confirm-delete data-confirm-message="<?= $e(__('message.delete_time_log')) ?>">

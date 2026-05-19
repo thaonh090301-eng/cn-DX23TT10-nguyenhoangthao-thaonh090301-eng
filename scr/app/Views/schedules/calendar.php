@@ -26,6 +26,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales-all.global.min.js"></script>
+    <?php $usesAmPm = \App\Core\Lang::locale() === 'en'; ?>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const calendarElement = document.getElementById('calendar');
@@ -57,7 +58,12 @@
                 eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: false
+                    hour12: <?= $usesAmPm ? 'true' : 'false' ?>
+                },
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: <?= $usesAmPm ? 'true' : 'false' ?>
                 },
                 eventClick: (info) => {
                     window.location.href = `/schedules/${encodeURIComponent(info.event.id)}/edit`;

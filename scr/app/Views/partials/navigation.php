@@ -6,6 +6,7 @@ $activeNav = $activeNav ?? '';
 $navItems = [
     'home' => ['label' => __('nav.home'), 'href' => '/'],
     'dashboard' => ['label' => __('nav.dashboard'), 'href' => '/dashboard'],
+    'assistant' => ['label' => __('nav.assistant'), 'href' => '/assistant'],
     'optimizer' => ['label' => __('nav.optimizer'), 'href' => '/optimizer'],
     'calendar' => ['label' => __('nav.calendar'), 'href' => '/calendar'],
     'schedules' => ['label' => __('nav.schedules'), 'href' => '/schedules'],
@@ -26,6 +27,12 @@ $workspacePages = [
         'subtitle' => __('section.overview'),
         'quickLabel' => __('action.new_schedule'),
         'quickHref' => '/schedules/create',
+    ],
+    'assistant' => [
+        'title' => __('nav.assistant'),
+        'subtitle' => __('assistant.eyebrow'),
+        'quickLabel' => '',
+        'quickHref' => '',
     ],
     'optimizer' => [
         'title' => __('nav.optimizer'),
@@ -60,7 +67,7 @@ $workspacePages = [
     'time_logs' => [
         'title' => __('nav.time_logs'),
         'subtitle' => __('section.tracking'),
-        'quickLabel' => __('action.new_time_log'),
+        'quickLabel' => __('time_report.action.unscheduled'),
         'quickHref' => '/time-logs/create',
     ],
 ];
@@ -98,9 +105,11 @@ $currentLocale = Lang::locale();
     </div>
 
     <div class="topbar-actions">
-        <a class="button primary" href="<?= $e($workspacePage['quickHref']) ?>">
-            <?= $e($workspacePage['quickLabel']) ?>
-        </a>
+        <?php if ($workspacePage['quickHref'] !== ''): ?>
+            <a class="button primary" href="<?= $e($workspacePage['quickHref']) ?>">
+                <?= $e($workspacePage['quickLabel']) ?>
+            </a>
+        <?php endif; ?>
         <div class="quick-add">
             <button
                 class="button quick-add-trigger"
@@ -115,6 +124,7 @@ $currentLocale = Lang::locale();
                 <a href="/activities/create"><?= $e(__('quick_add.activity')) ?></a>
                 <a href="/schedules/create"><?= $e(__('quick_add.schedule')) ?></a>
                 <a href="/time-logs/create"><?= $e(__('quick_add.time_log')) ?></a>
+                <a href="/assistant"><?= $e(__('quick_add.assistant')) ?></a>
                 <a href="/optimizer"><?= $e(__('quick_add.optimizer')) ?></a>
             </div>
         </div>

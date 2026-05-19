@@ -994,6 +994,14 @@ button.compact {
     line-height: 1.1;
 }
 
+.stat-card.mini {
+    padding: var(--space-section);
+}
+
+.stat-card.mini strong {
+    font-size: 24px;
+}
+
 .dashboard-section {
     margin-bottom: var(--space-section);
 }
@@ -1127,6 +1135,210 @@ button.compact {
 
 .suggestion-action {
     min-width: 140px;
+}
+
+.assistant-dashboard-copy {
+    margin-bottom: var(--space-section);
+}
+
+.assistant-empty {
+    display: grid;
+    gap: var(--dashboard-gap);
+    justify-items: center;
+}
+
+.assistant-empty.compact {
+    justify-items: start;
+    text-align: left;
+}
+
+.assistant-empty p {
+    margin-bottom: 0;
+}
+
+.assistant-grid {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.assistant-grid.compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.assistant-card {
+    display: grid;
+    align-content: start;
+    gap: var(--dashboard-gap);
+    min-height: 100%;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: var(--space-section);
+    box-shadow: var(--shadow-soft);
+}
+
+.assistant-card.warning {
+    border-left-color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 4%, var(--panel));
+}
+
+.assistant-card.alarm {
+    border-left-color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 4%, var(--panel));
+}
+
+.assistant-card.success {
+    border-left-color: var(--success);
+    background: color-mix(in srgb, var(--success) 4%, var(--panel));
+}
+
+.assistant-card.info {
+    border-left-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 4%, var(--panel));
+}
+
+.assistant-card-header {
+    display: grid;
+    gap: 8px;
+}
+
+.assistant-card h2,
+.assistant-card h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.25;
+}
+
+.assistant-card h3 {
+    font-size: 17px;
+}
+
+.assistant-card p,
+.assistant-recommendation span {
+    color: var(--muted);
+    font-size: var(--small-font-size);
+    line-height: var(--content-line-height);
+}
+
+.assistant-severity {
+    justify-self: start;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel-muted);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 6px 9px;
+}
+
+.assistant-card.warning .assistant-severity {
+    border-color: color-mix(in srgb, var(--warning) 34%, var(--line));
+    background: color-mix(in srgb, var(--warning) 10%, var(--panel));
+    color: var(--warning);
+}
+
+.assistant-card.alarm .assistant-severity {
+    border-color: color-mix(in srgb, var(--danger) 38%, var(--line));
+    background: color-mix(in srgb, var(--danger) 10%, var(--panel));
+    color: var(--danger);
+}
+
+.assistant-card.success .assistant-severity {
+    border-color: color-mix(in srgb, var(--success) 34%, var(--line));
+    background: color-mix(in srgb, var(--success) 10%, var(--panel));
+    color: var(--success);
+}
+
+.assistant-card.info .assistant-severity {
+    border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.assistant-recommendation {
+    display: grid;
+    gap: 4px;
+    border-top: 1px solid var(--line);
+    padding-top: var(--dashboard-gap);
+}
+
+.assistant-recommendation strong {
+    color: var(--text);
+    font-size: var(--meta-font-size);
+    text-transform: uppercase;
+}
+
+.time-report-toolbar {
+    display: grid;
+    gap: var(--space-section);
+}
+
+.time-report-filter {
+    align-items: end;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    margin-bottom: 0;
+}
+
+.time-report-summary {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.report-table-wrap {
+    max-height: none;
+}
+
+.time-report-table {
+    min-width: 1180px;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 112px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel-muted);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+}
+
+.status-pill.info {
+    border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.status-pill.success {
+    border-color: color-mix(in srgb, var(--success) 34%, var(--line));
+    background: color-mix(in srgb, var(--success) 10%, var(--panel));
+    color: var(--success);
+}
+
+.status-pill.warning {
+    border-color: color-mix(in srgb, var(--warning) 34%, var(--line));
+    background: color-mix(in srgb, var(--warning) 10%, var(--panel));
+    color: var(--warning);
+}
+
+.status-pill.alarm {
+    border-color: color-mix(in srgb, var(--danger) 38%, var(--line));
+    background: color-mix(in srgb, var(--danger) 10%, var(--panel));
+    color: var(--danger);
+}
+
+.report-actions form {
+    margin: 0;
 }
 
 .language-switch {
@@ -1267,12 +1479,57 @@ button.compact {
     }
 
     .dashboard-grid,
-    .split-grid {
+    .split-grid,
+    .assistant-grid,
+    .assistant-grid.compact,
+    .time-report-summary,
+    .time-report-filter {
         grid-template-columns: 1fr;
     }
 
     .section-heading {
         flex-direction: column;
+    }
+}
+
+@media print {
+    .workspace-sidebar,
+    .workspace-topbar,
+    .page-header .header-actions,
+    .time-report-toolbar .form-actions,
+    .report-actions,
+    .toast-region,
+    .modal-backdrop {
+        display: none !important;
+    }
+
+    body,
+    .app-shell,
+    .panel {
+        background: #ffffff !important;
+        color: #111111 !important;
+        box-shadow: none !important;
+    }
+
+    .app-shell,
+    .app-shell > :not(.workspace-sidebar):not(.workspace-topbar) {
+        display: block;
+        padding: 0;
+    }
+
+    .panel,
+    .stat-card {
+        border-color: #d0d0d0;
+        break-inside: avoid;
+    }
+
+    .table-wrap {
+        overflow: visible;
+    }
+
+    .time-report-table {
+        min-width: 0;
+        font-size: 12px;
     }
 }
 

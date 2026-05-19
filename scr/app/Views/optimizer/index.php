@@ -132,9 +132,9 @@
                         <tbody>
                             <?php foreach ($suggestions as $index => $suggestion): ?>
                                 <tr class="<?= $index === 0 ? 'best-suggestion' : '' ?>">
-                                    <td><?= $e($suggestion['start_at']) ?></td>
-                                    <td><?= $e($suggestion['end_at']) ?></td>
-                                    <td><?= $e($suggestion['gap_minutes']) ?> <?= $e(__('unit.min')) ?></td>
+                                    <td><?= $e(format_app_datetime($suggestion['start_at'])) ?></td>
+                                    <td><?= $e(format_app_datetime($suggestion['end_at'])) ?></td>
+                                    <td><?= $e(format_duration_minutes($suggestion['gap_minutes'])) ?></td>
                                     <td><?= $e(display_activity_title($suggestion['activity_title'])) ?></td>
                                     <td>
                                         <span class="color-chip" style="--chip: <?= $e($suggestion['category_color']) ?>"></span>

@@ -93,7 +93,7 @@ class OptimizerController extends Controller
             'start_at' => $startAt,
             'end_at' => $endAt,
             'status' => 'scheduled',
-            'notes' => 'Created from optimizer suggestion.',
+            'notes' => localized_note('note.created_from_optimizer'),
         ]);
 
         $this->flash('success', \__('flash.optimizer_schedule_created'));
@@ -104,7 +104,7 @@ class OptimizerController extends Controller
     private function renderForm(array $input, array $errors, array $suggestions, array $flash = []): string
     {
         return $this->view('optimizer/index', [
-            'title' => 'Optimizer',
+            'title' => \__('nav.optimizer'),
             'input' => $input,
             'errors' => $errors,
             'suggestions' => $suggestions,

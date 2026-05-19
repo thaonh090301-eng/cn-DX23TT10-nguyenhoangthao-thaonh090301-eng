@@ -60,6 +60,7 @@
                                 <th><?= $e(__('label.category')) ?></th>
                                 <th><?= $e(__('label.start')) ?></th>
                                 <th><?= $e(__('label.end')) ?></th>
+                                <th><?= $e(__('label.notes')) ?></th>
                                 <th><?= $e(__('label.status')) ?></th>
                                 <th><?= $e(__('label.actions')) ?></th>
                             </tr>
@@ -71,7 +72,8 @@
                                     $activityTitle = display_activity_title($schedule['activity_title']);
                                     $categoryName = display_category_name($schedule['category_name']);
                                     $statusLabel = __('schedule_status.' . $schedule['status']);
-                                    $searchText = implode(' ', [$scheduleTitle, $activityTitle, $categoryName, $statusLabel, $schedule['start_at'], $schedule['end_at']]);
+                                    $notes = display_note($schedule['notes'] ?? '');
+                                    $searchText = implode(' ', [$scheduleTitle, $activityTitle, $categoryName, $statusLabel, $notes, format_app_datetime($schedule['start_at']), format_app_datetime($schedule['end_at'])]);
                                 ?>
                                 <tr data-filter-row data-search="<?= $e($searchText) ?>" data-activity="<?= $e($activityTitle) ?>" data-status="<?= $e($statusLabel) ?>">
                                     <td><?= $e($scheduleTitle) ?></td>
@@ -80,8 +82,9 @@
                                         <span class="color-chip" style="--chip: <?= $e($schedule['category_color']) ?>"></span>
                                         <?= $e($categoryName) ?>
                                     </td>
-                                    <td><?= $e($schedule['start_at']) ?></td>
-                                    <td><?= $e($schedule['end_at']) ?></td>
+                                    <td><?= $e(format_app_datetime($schedule['start_at'])) ?></td>
+                                    <td><?= $e(format_app_datetime($schedule['end_at'])) ?></td>
+                                    <td><?= $e($notes) ?></td>
                                     <td><?= $e($statusLabel) ?></td>
                                     <td class="actions">
                                         <a href="/schedules/<?= $e($schedule['id']) ?>/edit"><?= $e(__('action.edit')) ?></a>

@@ -6,7 +6,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $e(__('page.create_time_log')) ?></title>
+    <title><?= $e(__('time_report.action.unscheduled')) ?></title>
     <?php require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'theme_boot.php'; ?>
     <link rel="stylesheet" href="../assets/css/app.css">
 </head>
@@ -17,7 +17,7 @@ $dateTimeLocal = static fn (mixed $value): string => str_replace(' ', 'T', subst
         <section class="page-header">
             <div>
                 <p class="eyebrow"><?= $e(__('nav.time_logs')) ?></p>
-                <h1><?= $e(__('page.create_time_log')) ?></h1>
+                <h1><?= $e(__('time_report.action.unscheduled')) ?></h1>
             </div>
         </section>
 

@@ -62,6 +62,21 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
             <?php endif; ?>
         </section>
 
+        <section class="panel dashboard-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow"><?= $e(__('assistant.eyebrow')) ?></p>
+                    <h2><?= $e(__('assistant.dashboard_title')) ?></h2>
+                </div>
+                <a class="button primary compact" href="/assistant"><?= $e(__('assistant.open')) ?></a>
+            </div>
+            <p class="assistant-dashboard-copy"><?= $e(__('assistant.description')) ?></p>
+
+            <div class="empty-state assistant-empty compact">
+                <p><?= $e(__('assistant.dashboard_prompt')) ?></p>
+            </div>
+        </section>
+
         <section class="split-grid">
             <article class="panel">
                 <div class="section-heading">

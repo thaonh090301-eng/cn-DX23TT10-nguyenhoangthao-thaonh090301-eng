@@ -134,7 +134,7 @@ class ScheduleRepository
                     'activity' => \display_activity_title($schedule['activity_title']),
                     'category' => \display_category_name($schedule['category_name']),
                     'status' => \__('schedule_status.' . $schedule['status']),
-                    'notes' => $schedule['notes'],
+                    'notes' => \display_note($schedule['notes']),
                 ],
             ];
         }, $schedules);

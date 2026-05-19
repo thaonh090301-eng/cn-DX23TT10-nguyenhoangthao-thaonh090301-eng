@@ -47,3 +47,99 @@ if (!function_exists('display_activity_title')) {
         return display_mapped_value('activity', $title);
     }
 }
+
+if (!function_exists('format_app_date')) {
+    function format_app_date(mixed $value): string
+    {
+        $timestamp = app_timestamp($value);
+
+        if ($timestamp === null) {
+            return '';
+        }
+
+        return Lang::locale() === 'en' ? date('m/d/Y', $timestamp) : date('d/m/Y', $timestamp);
+    }
+}
+
+if (!function_exists('format_app_time')) {
+    function format_app_time(mixed $value): string
+    {
+        $timestamp = app_timestamp($value);
+
+        if ($timestamp === null) {
+            return '';
+        }
+
+        return Lang::locale() === 'en' ? date('h:i A', $timestamp) : date('H:i', $timestamp);
+    }
+}
+
+if (!function_exists('format_app_datetime')) {
+    function format_app_datetime(mixed $value): string
+    {
+        $timestamp = app_timestamp($value);
+
+        if ($timestamp === null) {
+            return '';
+        }
+
+        return Lang::locale() === 'en' ? date('m/d/Y h:i A', $timestamp) : date('d/m/Y H:i', $timestamp);
+    }
+}
+
+if (!function_exists('format_duration_minutes')) {
+    function format_duration_minutes(mixed $minutes): string
+    {
+        if ($minutes === null || $minutes === '') {
+            return '';
+        }
+
+        return (int) $minutes . ' ' . __('unit.min');
+    }
+}
+
+if (!function_exists('display_note')) {
+    function display_note(mixed $note): string
+    {
+        $note = trim((string) $note);
+
+        if ($note === '') {
+            return '';
+        }
+
+        $mappedNotes = [
+            'Created from optimizer suggestion.' => __('note.created_from_optimizer'),
+            'Tạo từ gợi ý tối ưu.' => __('note.created_from_optimizer'),
+            'Automatically recorded from schedule' => __('time_report.auto_note'),
+            'Tự động ghi nhận theo lịch' => __('time_report.auto_note'),
+        ];
+
+        return $mappedNotes[$note] ?? $note;
+    }
+}
+
+if (!function_exists('localized_note')) {
+    function localized_note(string $key): string
+    {
+        return __($key);
+    }
+}
+
+if (!function_exists('app_timestamp')) {
+    function app_timestamp(mixed $value): ?int
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value->getTimestamp();
+        }
+
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $timestamp = strtotime($value);
+
+        return $timestamp === false ? null : $timestamp;
+    }
+}

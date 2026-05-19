@@ -7,8 +7,10 @@ $navItems = [
     'home' => ['label' => __('nav.home'), 'href' => '/'],
     'dashboard' => ['label' => __('nav.dashboard'), 'href' => '/dashboard'],
     'assistant' => ['label' => __('nav.assistant'), 'href' => '/assistant'],
+    'focus' => ['label' => __('nav.focus'), 'href' => '/focus'],
     'timetable' => ['label' => __('nav.timetable'), 'href' => '/timetable'],
     'reminders' => ['label' => __('nav.reminders'), 'href' => '/reminders'],
+    'important_dates' => ['label' => __('nav.important_dates'), 'href' => '/important-dates'],
     'optimizer' => ['label' => __('nav.optimizer'), 'href' => '/optimizer'],
     'calendar' => ['label' => __('nav.calendar'), 'href' => '/calendar'],
     'schedules' => ['label' => __('nav.schedules'), 'href' => '/schedules'],
@@ -36,6 +38,12 @@ $workspacePages = [
         'quickLabel' => '',
         'quickHref' => '',
     ],
+    'focus' => [
+        'title' => __('nav.focus'),
+        'subtitle' => __('focus.eyebrow'),
+        'quickLabel' => '',
+        'quickHref' => '',
+    ],
     'timetable' => [
         'title' => __('nav.timetable'),
         'subtitle' => __('timetable.eyebrow'),
@@ -47,6 +55,12 @@ $workspacePages = [
         'subtitle' => __('reminder.eyebrow'),
         'quickLabel' => __('action.new_reminder'),
         'quickHref' => '/reminders/create',
+    ],
+    'important_dates' => [
+        'title' => __('nav.important_dates'),
+        'subtitle' => __('important_date.eyebrow'),
+        'quickLabel' => __('action.new_important_date'),
+        'quickHref' => '/important-dates/create',
     ],
     'optimizer' => [
         'title' => __('nav.optimizer'),
@@ -139,6 +153,8 @@ $currentLocale = Lang::locale();
                 <a href="/schedules/create"><?= $e(__('quick_add.schedule')) ?></a>
                 <a href="/time-logs/create"><?= $e(__('quick_add.time_log')) ?></a>
                 <a href="/reminders/create"><?= $e(__('quick_add.reminder')) ?></a>
+                <a href="/important-dates/create"><?= $e(__('quick_add.important_date')) ?></a>
+                <a href="/focus"><?= $e(__('quick_add.focus')) ?></a>
                 <a href="/assistant"><?= $e(__('quick_add.assistant')) ?></a>
                 <a href="/optimizer"><?= $e(__('quick_add.optimizer')) ?></a>
             </div>

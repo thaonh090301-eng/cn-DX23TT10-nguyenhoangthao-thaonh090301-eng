@@ -1536,6 +1536,81 @@ button.compact {
     grid-column: 2;
 }
 
+.important-date-grid,
+.countdown-card-grid {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.important-date-card,
+.countdown-card {
+    display: grid;
+    align-content: start;
+    gap: var(--dashboard-gap);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--warning);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--warning) 4%, var(--panel));
+    padding: var(--space-section);
+    box-shadow: var(--shadow-soft);
+}
+
+.important-date-card-head {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr auto;
+    gap: var(--dashboard-gap);
+}
+
+.important-date-card h2,
+.countdown-card h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.25;
+}
+
+.countdown-card h3 {
+    font-size: 17px;
+}
+
+.important-date-card p,
+.countdown-card p,
+.countdown-card small {
+    color: var(--muted);
+    font-size: var(--small-font-size);
+}
+
+.important-date-countdown,
+.countdown-card strong {
+    color: var(--warning);
+    font-size: 24px;
+    font-weight: 850;
+    line-height: 1.15;
+}
+
+.important-date-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--dashboard-gap) * 0.55);
+}
+
+.important-date-meta span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    padding: 6px 9px;
+}
+
+.important-date-repeat {
+    align-self: end;
+    min-height: var(--control-height);
+}
+
 .language-switch {
     display: inline-flex;
     align-items: center;

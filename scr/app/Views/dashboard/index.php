@@ -105,6 +105,40 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
             <?php endif; ?>
         </section>
 
+        <section class="panel dashboard-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow"><?= $e(__('nav.important_dates')) ?></p>
+                    <h2><?= $e(__('dashboard.upcoming_important_dates')) ?></h2>
+                </div>
+                <a class="button compact" href="/important-dates"><?= $e(__('nav.important_dates')) ?></a>
+            </div>
+
+            <?php if (($upcomingImportantDates ?? []) === []): ?>
+                <div class="empty-state compact">
+                    <p><?= $e(__('dashboard.no_upcoming_important_dates')) ?></p>
+                </div>
+            <?php else: ?>
+                <div class="countdown-card-grid">
+                    <?php foreach ($upcomingImportantDates as $importantDate): ?>
+                        <?php
+                            $countdownDays = (int) $importantDate['countdown_days'];
+                            $countdownLabel = $countdownDays === 0
+                                ? __('important_date.countdown_today')
+                                : __('important_date.countdown_days', ['days' => $countdownDays]);
+                        ?>
+                        <article class="countdown-card">
+                            <span class="status-pill info"><?= $e(__('important_date.type.' . $importantDate['type'])) ?></span>
+                            <strong><?= $e($countdownLabel) ?></strong>
+                            <h3><?= $e($importantDate['title']) ?></h3>
+                            <p><?= $e(format_app_date($importantDate['next_event_date'])) ?></p>
+                            <small><?= $e(__($importantDate['reminder_status_key'], ['days' => $importantDate['remind_before_days']])) ?></small>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
+
         <section class="split-grid">
             <article class="panel">
                 <div class="section-heading">

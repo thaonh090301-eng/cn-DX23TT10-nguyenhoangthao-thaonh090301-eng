@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Repositories\ActivityRepository;
+use App\Repositories\ImportantDateRepository;
 use App\Repositories\ScheduleRepository;
 use DateTimeImmutable;
 use Exception;
@@ -17,11 +18,13 @@ class ScheduleController extends Controller
 
     private ScheduleRepository $schedules;
     private ActivityRepository $activities;
+    private ImportantDateRepository $importantDates;
 
     public function __construct()
     {
         $this->schedules = new ScheduleRepository();
         $this->activities = new ActivityRepository();
+        $this->importantDates = new ImportantDateRepository();
     }
 
     public function index(): string
@@ -45,7 +48,10 @@ class ScheduleController extends Controller
         header('Content-Type: application/json; charset=utf-8');
 
         return json_encode(
-            $this->schedules->calendarEventsByUser(self::DEMO_USER_ID),
+            array_merge(
+                $this->schedules->calendarEventsByUser(self::DEMO_USER_ID),
+                $this->importantDates->calendarEventsByUser(self::DEMO_USER_ID)
+            ),
             JSON_UNESCAPED_UNICODE
         ) ?: '[]';
     }

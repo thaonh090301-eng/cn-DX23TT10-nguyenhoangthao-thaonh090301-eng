@@ -66,6 +66,12 @@
                     hour12: <?= $usesAmPm ? 'true' : 'false' ?>
                 },
                 eventClick: (info) => {
+                    if (info.event.extendedProps.kind === 'important_date') {
+                        const id = String(info.event.id).replace('important-date-', '');
+                        window.location.href = `/important-dates/${encodeURIComponent(id)}/edit`;
+                        return;
+                    }
+
                     window.location.href = `/schedules/${encodeURIComponent(info.event.id)}/edit`;
                 }
             });

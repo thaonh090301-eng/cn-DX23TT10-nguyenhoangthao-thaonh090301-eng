@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Repositories\DashboardRepository;
+use App\Repositories\ImportantDateRepository;
 use App\Repositories\ReminderRepository;
 
 class DashboardController extends Controller
@@ -13,11 +14,13 @@ class DashboardController extends Controller
     private const DEMO_USER_ID = 1;
 
     private DashboardRepository $dashboard;
+    private ImportantDateRepository $importantDates;
     private ReminderRepository $reminders;
 
     public function __construct()
     {
         $this->dashboard = new DashboardRepository();
+        $this->importantDates = new ImportantDateRepository();
         $this->reminders = new ReminderRepository();
     }
 
@@ -36,6 +39,7 @@ class DashboardController extends Controller
             'personalThresholdMinutes' => $threshold,
             'personalActualMinutes' => $personalMinutes,
             'upcomingReminders' => $this->reminders->upcomingToday(self::DEMO_USER_ID, 4),
+            'upcomingImportantDates' => $this->importantDates->upcomingWithinDays(self::DEMO_USER_ID, 7, 4),
         ]);
     }
 

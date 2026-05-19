@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Database;
+use App\Repositories\ImportantDateRepository;
 use App\Repositories\ReminderRepository;
 use DateTimeImmutable;
 use PDO;
@@ -45,6 +46,9 @@ class SmartAssistantService
         $reminderRepository = new ReminderRepository($this->db);
         $upcomingReminder = $reminderRepository->upcomingToday($userId, 1)[0] ?? null;
         $missedReminder = $reminderRepository->missedToday($userId, 1)[0] ?? null;
+        $importantDateRepository = new ImportantDateRepository($this->db);
+        $upcomingImportantDates = $importantDateRepository->upcomingWithinDays($userId, 7, 3);
+        $softPlanningDate = $this->firstSoftPlanningImportantDate($upcomingImportantDates);
         $suggestions = [];
         $overPlannedMinutes = $summary['actual_today_minutes'] - $summary['planned_today_minutes'];
 
@@ -200,6 +204,34 @@ class SmartAssistantService
             ];
         }
 
+        if ($upcomingImportantDates !== []) {
+            $importantDate = $upcomingImportantDates[0];
+            $suggestions[] = [
+                'title' => __('assistant.rule.important_date.title'),
+                'explanation' => __('assistant.rule.important_date.explanation', [
+                    'title' => $importantDate['title'],
+                    'days' => (int) $importantDate['countdown_days'],
+                    'date' => \format_app_date($importantDate['next_event_date']),
+                ]),
+                'recommendation' => __('assistant.rule.important_date.recommendation', [
+                    'days' => (int) $importantDate['countdown_days'],
+                ]),
+                'severity' => 'info',
+            ];
+        }
+
+        if ($softPlanningDate !== null) {
+            $suggestions[] = [
+                'title' => __('assistant.rule.light_before_important_date.title'),
+                'explanation' => __('assistant.rule.light_before_important_date.explanation', [
+                    'title' => $softPlanningDate['title'],
+                    'type' => __('important_date.type.' . $softPlanningDate['type']),
+                ]),
+                'recommendation' => __('assistant.rule.light_before_important_date.recommendation'),
+                'severity' => 'warning',
+            ];
+        }
+
         if ($dominantCategory !== null) {
             $suggestions[] = [
                 'title' => __('assistant.rule.category.title'),
@@ -263,6 +295,17 @@ class SmartAssistantService
         }
 
         return $suggestions;
+    }
+
+    private function firstSoftPlanningImportantDate(array $importantDates): ?array
+    {
+        foreach ($importantDates as $importantDate) {
+            if (in_array($importantDate['type'], ['travel', 'holiday', 'date', 'anniversary'], true)) {
+                return $importantDate;
+            }
+        }
+
+        return null;
     }
 
     private function plannedMinutes(int $userId, string $startAt, string $endAt): int

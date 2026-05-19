@@ -10,10 +10,17 @@
 <body>
     <main class="login-shell">
         <section class="login-panel">
-            <div>
-                <p class="eyebrow"><?= $e(__('auth.demo_eyebrow')) ?></p>
-                <h1><?= $e(__('auth.login_title')) ?></h1>
-                <p><?= $e(__('auth.login_copy')) ?></p>
+            <?php $currentLocale = \App\Core\Lang::locale(); ?>
+            <div class="login-panel-header">
+                <div>
+                    <p class="eyebrow"><?= $e(__('auth.demo_eyebrow')) ?></p>
+                    <h1><?= $e(__('auth.login_title')) ?></h1>
+                    <p><?= $e(__('auth.login_copy')) ?></p>
+                </div>
+                <div class="language-switch" aria-label="<?= $e(__('language.switcher')) ?>">
+                    <a href="/login?locale=vi" <?= $currentLocale === 'vi' ? 'aria-current="true"' : '' ?>>VI</a>
+                    <a href="/login?locale=en" <?= $currentLocale === 'en' ? 'aria-current="true"' : '' ?>>EN</a>
+                </div>
             </div>
 
             <?php foreach (['success', 'warning', 'danger'] as $flashType): ?>

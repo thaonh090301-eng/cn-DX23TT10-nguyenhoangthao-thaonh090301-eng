@@ -772,6 +772,23 @@ p {
     margin-bottom: 8px;
 }
 
+.login-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-section);
+}
+
+.login-panel-header > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.login-panel-header .language-switch {
+    flex-shrink: 0;
+    margin-left: 0;
+}
+
 .demo-credentials {
     display: grid;
     gap: 6px;
@@ -781,6 +798,17 @@ p {
     color: var(--muted);
     font-size: var(--small-font-size);
     padding: var(--button-y) var(--button-x);
+}
+
+@media (max-width: 560px) {
+    .login-panel-header {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .login-panel-header .language-switch {
+        align-self: flex-end;
+    }
 }
 
 .demo-credentials strong {

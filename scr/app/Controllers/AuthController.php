@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Lang;
 use App\Repositories\UserRepository;
 
 class AuthController extends Controller
@@ -18,6 +19,10 @@ class AuthController extends Controller
 
     public function login(): string
     {
+        if (isset($_GET['locale'])) {
+            Lang::setLocale((string) $_GET['locale']);
+        }
+
         if ($this->currentUserId() !== null) {
             return $this->redirect('/dashboard');
         }
@@ -64,6 +69,7 @@ class AuthController extends Controller
 
     public function logout(): string
     {
+        $locale = (string) ($_SESSION['locale'] ?? Lang::locale());
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {
@@ -81,9 +87,10 @@ class AuthController extends Controller
 
         session_destroy();
         session_start();
+        Lang::setLocale($locale);
         $this->flash('success', __('flash.logged_out'));
 
-        return $this->redirect('/login');
+        return $this->redirect('/login?locale=' . rawurlencode($locale));
     }
 
     public function account(): string

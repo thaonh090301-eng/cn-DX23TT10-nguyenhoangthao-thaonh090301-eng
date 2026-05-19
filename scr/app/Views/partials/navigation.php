@@ -7,6 +7,7 @@ $navItems = [
     'home' => ['label' => __('nav.home'), 'href' => '/'],
     'dashboard' => ['label' => __('nav.dashboard'), 'href' => '/dashboard'],
     'assistant' => ['label' => __('nav.assistant'), 'href' => '/assistant'],
+    'timetable' => ['label' => __('nav.timetable'), 'href' => '/timetable'],
     'optimizer' => ['label' => __('nav.optimizer'), 'href' => '/optimizer'],
     'calendar' => ['label' => __('nav.calendar'), 'href' => '/calendar'],
     'schedules' => ['label' => __('nav.schedules'), 'href' => '/schedules'],
@@ -33,6 +34,12 @@ $workspacePages = [
         'subtitle' => __('assistant.eyebrow'),
         'quickLabel' => '',
         'quickHref' => '',
+    ],
+    'timetable' => [
+        'title' => __('nav.timetable'),
+        'subtitle' => __('timetable.eyebrow'),
+        'quickLabel' => __('timetable.action.add_schedule'),
+        'quickHref' => '/schedules/create',
     ],
     'optimizer' => [
         'title' => __('nav.optimizer'),

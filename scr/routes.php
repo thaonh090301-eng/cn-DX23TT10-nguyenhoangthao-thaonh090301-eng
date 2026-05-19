@@ -11,6 +11,7 @@ use App\Controllers\LanguageController;
 use App\Controllers\OptimizerController;
 use App\Controllers\ScheduleController;
 use App\Controllers\TimeLogController;
+use App\Controllers\TimetableController;
 use App\Core\Router;
 
 /** @var Router $router */
@@ -19,6 +20,7 @@ $router->get('/lang', [LanguageController::class, 'change']);
 $router->get('/dashboard', [DashboardController::class, 'index']);
 $router->get('/assistant', [AssistantController::class, 'index']);
 $router->post('/assistant', [AssistantController::class, 'generate']);
+$router->get('/timetable', [TimetableController::class, 'index']);
 $router->get('/optimizer', [OptimizerController::class, 'index']);
 $router->post('/optimizer', [OptimizerController::class, 'suggest']);
 $router->post('/optimizer/schedule', [OptimizerController::class, 'createSchedule']);

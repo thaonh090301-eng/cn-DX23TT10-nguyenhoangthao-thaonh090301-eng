@@ -248,7 +248,7 @@ class TimeLogController extends Controller
         $hasActual = $row['time_log_id'] !== null;
 
         if (!$hasActual) {
-            $row['report_status'] = __('time_report.status.unconfirmed');
+            $row['report_status'] = __('time_report.status.not_confirmed');
             $row['report_status_type'] = 'warning';
 
             return $row;
@@ -262,7 +262,7 @@ class TimeLogController extends Controller
         }
 
         if ($plannedMinutes === null) {
-            $row['report_status'] = __('time_report.status.unscheduled');
+            $row['report_status'] = __('time_report.status.confirmed');
             $row['report_status_type'] = 'info';
 
             return $row;
@@ -272,7 +272,7 @@ class TimeLogController extends Controller
         $absoluteDifference = abs($difference);
 
         if ($absoluteDifference <= 15) {
-            $row['report_status'] = __('time_report.status.on_plan');
+            $row['report_status'] = __('time_report.status.confirmed');
             $row['report_status_type'] = 'success';
         } elseif ($difference > 60 || $actualMinutes >= (int) ceil($plannedMinutes * 1.5)) {
             $row['report_status'] = __('time_report.status.overrun');

@@ -1611,6 +1611,137 @@ button.compact {
     min-height: var(--control-height);
 }
 
+.focus-layout {
+    display: grid;
+    gap: var(--form-gap);
+    grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1.15fr);
+}
+
+.focus-panel,
+.focus-timer-panel {
+    min-height: 100%;
+}
+
+.focus-panel {
+    display: grid;
+    align-content: start;
+    gap: var(--form-gap);
+}
+
+.focus-duration-group {
+    display: grid;
+    gap: calc(var(--dashboard-gap) * 0.7);
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.focus-duration-group legend {
+    margin-bottom: calc(var(--dashboard-gap) * 0.5);
+    color: var(--text);
+    font-size: var(--meta-font-size);
+    font-weight: 800;
+}
+
+.focus-duration-options {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.focus-duration-option {
+    position: relative;
+    display: block;
+}
+
+.focus-duration-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.focus-duration-option span {
+    display: grid;
+    min-height: 58px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 850;
+    transition: border-color 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.focus-duration-option input:checked + span {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.focus-actions {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.focus-save-button {
+    width: 100%;
+}
+
+.focus-timer-panel {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--space-section);
+    overflow: hidden;
+    min-height: 460px;
+    background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 34%),
+        var(--panel);
+    text-align: center;
+}
+
+.focus-timer-display {
+    position: relative;
+    z-index: 1;
+    color: var(--text);
+    font-size: clamp(64px, 10vw, 132px);
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 0.95;
+}
+
+.focus-timer-panel p:not(.eyebrow) {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+}
+
+.focus-orbit {
+    position: absolute;
+    width: min(420px, 76%);
+    aspect-ratio: 1;
+    border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+    border-radius: 50%;
+    opacity: 0.55;
+}
+
+.focus-orbit span {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-50%);
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
 .language-switch {
     display: inline-flex;
     align-items: center;
@@ -1753,7 +1884,13 @@ button.compact {
     .assistant-grid,
     .assistant-grid.compact,
     .time-report-summary,
-    .time-report-filter {
+    .time-report-filter,
+    .focus-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .focus-actions,
+    .focus-duration-options {
         grid-template-columns: 1fr;
     }
 

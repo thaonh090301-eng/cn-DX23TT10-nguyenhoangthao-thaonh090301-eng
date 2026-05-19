@@ -363,4 +363,185 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         applyFilters();
     });
+
+    document.querySelectorAll('[data-focus-form]').forEach((form) => {
+        const timerPanel = document.querySelector('[data-focus-timer]');
+        const display = document.querySelector('[data-focus-display]');
+        const status = document.querySelector('[data-focus-status]');
+        const activitySelect = form.querySelector('[data-focus-activity]');
+        const durationInputs = Array.from(form.querySelectorAll('[data-focus-duration]'));
+        const startButton = form.querySelector('[data-focus-start]');
+        const pauseButton = form.querySelector('[data-focus-pause]');
+        const resetButton = form.querySelector('[data-focus-reset]');
+        const saveButton = form.querySelector('[data-focus-save]');
+        const startedAtInput = form.querySelector('[data-focus-started-at]');
+        const endedAtInput = form.querySelector('[data-focus-ended-at]');
+
+        if (!timerPanel || !display || !status || !startButton || !pauseButton || !resetButton || !saveButton) {
+            return;
+        }
+
+        const labels = {
+            ready: timerPanel.dataset.focusReady || 'Ready when you are.',
+            running: timerPanel.dataset.focusRunning || 'Focus session is running.',
+            paused: timerPanel.dataset.focusPaused || 'Paused.',
+            completed: timerPanel.dataset.focusCompleted || 'Session complete.',
+            pause: timerPanel.dataset.focusPauseLabel || 'Pause',
+            resume: timerPanel.dataset.focusResumeLabel || 'Resume',
+        };
+        let totalSeconds = Math.max(1, Number(timerPanel.dataset.focusInitialDuration || 25)) * 60;
+        let remainingSeconds = totalSeconds;
+        let intervalId = null;
+        let completed = false;
+
+        const pad = (value) => String(value).padStart(2, '0');
+
+        const selectedDurationMinutes = () => {
+            const selected = durationInputs.find((input) => input.checked);
+            return Math.max(1, Number(selected?.value || 25));
+        };
+
+        const formatDuration = (seconds) => {
+            const minutes = Math.floor(seconds / 60);
+            const rest = seconds % 60;
+
+            return `${pad(minutes)}:${pad(rest)}`;
+        };
+
+        const formatDateTime = (date) => {
+            const year = date.getFullYear();
+            const month = pad(date.getMonth() + 1);
+            const day = pad(date.getDate());
+            const hours = pad(date.getHours());
+            const minutes = pad(date.getMinutes());
+            const seconds = pad(date.getSeconds());
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        const setControlsLocked = (locked) => {
+            activitySelect?.toggleAttribute('disabled', locked);
+            durationInputs.forEach((input) => {
+                input.disabled = locked;
+            });
+        };
+
+        const render = () => {
+            display.textContent = formatDuration(remainingSeconds);
+        };
+
+        const clearTimer = () => {
+            if (intervalId !== null) {
+                window.clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
+
+        const resetSession = () => {
+            clearTimer();
+            totalSeconds = selectedDurationMinutes() * 60;
+            remainingSeconds = totalSeconds;
+            completed = false;
+            setControlsLocked(false);
+            startButton.disabled = false;
+            pauseButton.disabled = true;
+            pauseButton.textContent = labels.pause;
+            saveButton.hidden = true;
+            startedAtInput.value = '';
+            endedAtInput.value = '';
+            status.textContent = labels.ready;
+            render();
+        };
+
+        const completeSession = () => {
+            clearTimer();
+            remainingSeconds = 0;
+            completed = true;
+
+            const endedAt = new Date();
+            const startedAt = new Date(endedAt.getTime() - (totalSeconds * 1000));
+
+            startedAtInput.value = formatDateTime(startedAt);
+            endedAtInput.value = formatDateTime(endedAt);
+            startButton.disabled = true;
+            pauseButton.disabled = true;
+            saveButton.hidden = false;
+            status.textContent = labels.completed;
+            render();
+        };
+
+        const tick = () => {
+            remainingSeconds = Math.max(0, remainingSeconds - 1);
+            render();
+
+            if (remainingSeconds <= 0) {
+                completeSession();
+            }
+        };
+
+        const startSession = () => {
+            if (completed) {
+                resetSession();
+            }
+
+            if (activitySelect && !activitySelect.value) {
+                form.reportValidity();
+                return;
+            }
+
+            if (remainingSeconds <= 0) {
+                resetSession();
+            }
+
+            clearTimer();
+            setControlsLocked(true);
+            startButton.disabled = true;
+            pauseButton.disabled = false;
+            pauseButton.textContent = labels.pause;
+            saveButton.hidden = true;
+            status.textContent = labels.running;
+            intervalId = window.setInterval(tick, 1000);
+        };
+
+        const pauseOrResume = () => {
+            if (completed) {
+                return;
+            }
+
+            if (intervalId !== null) {
+                clearTimer();
+                startButton.disabled = false;
+                pauseButton.textContent = labels.resume;
+                status.textContent = labels.paused;
+                return;
+            }
+
+            startSession();
+        };
+
+        durationInputs.forEach((input) => {
+            input.addEventListener('change', () => {
+                if (intervalId !== null || completed) {
+                    return;
+                }
+
+                totalSeconds = selectedDurationMinutes() * 60;
+                remainingSeconds = totalSeconds;
+                render();
+            });
+        });
+
+        startButton.addEventListener('click', startSession);
+        pauseButton.addEventListener('click', pauseOrResume);
+        resetButton.addEventListener('click', resetSession);
+        form.addEventListener('submit', (event) => {
+            if (!completed) {
+                event.preventDefault();
+                return;
+            }
+
+            setControlsLocked(false);
+        });
+        resetSession();
+    });
 });

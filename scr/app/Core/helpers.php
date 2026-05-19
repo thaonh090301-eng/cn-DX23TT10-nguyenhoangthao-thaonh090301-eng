@@ -112,6 +112,7 @@ if (!function_exists('display_note')) {
             'Tạo từ gợi ý tối ưu.' => __('note.created_from_optimizer'),
             'Automatically recorded from schedule' => __('time_report.auto_note'),
             'Tự động ghi nhận theo lịch' => __('time_report.auto_note'),
+            'Tạo từ chế độ tập trung' => __('note.created_from_focus'),
         ];
 
         return $mappedNotes[$note] ?? $note;

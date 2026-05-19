@@ -41,11 +41,11 @@ class OptimizerController extends Controller
         $suggestions = [];
 
         if ($errors === []) {
-            $activity = $this->activities->findByUser((int) $input['activity_id'], self::DEMO_USER_ID);
+            $activity = $this->activities->findByUser((int) $input['activity_id'], $this->authUserId());
             $rangeStart = new DateTimeImmutable($input['range_start'] . ' 00:00:00');
             $rangeEnd = new DateTimeImmutable($input['range_end'] . ' 00:00:00');
             $busySchedules = $this->optimizerRepository->busySchedulesByUser(
-                self::DEMO_USER_ID,
+                $this->authUserId(),
                 $rangeStart->format('Y-m-d H:i:s'),
                 $rangeEnd->format('Y-m-d H:i:s')
             );
@@ -71,7 +71,7 @@ class OptimizerController extends Controller
         $activityId = (int) ($_POST['activity_id'] ?? 0);
         $startAt = $this->normalizeDateTime((string) ($_POST['start_at'] ?? ''));
         $endAt = $this->normalizeDateTime((string) ($_POST['end_at'] ?? ''));
-        $activity = $this->activities->findByUser($activityId, self::DEMO_USER_ID);
+        $activity = $this->activities->findByUser($activityId, $this->authUserId());
 
         if ($activity === null || $startAt === null || $endAt === null || strtotime($endAt) <= strtotime($startAt)) {
             $this->flash('danger', \__('flash.optimizer_slot_failed'));
@@ -79,7 +79,7 @@ class OptimizerController extends Controller
             return $this->redirect('/optimizer');
         }
 
-        $busySchedules = $this->optimizerRepository->busySchedulesByUser(self::DEMO_USER_ID, $startAt, $endAt);
+        $busySchedules = $this->optimizerRepository->busySchedulesByUser($this->authUserId(), $startAt, $endAt);
 
         if ($busySchedules !== []) {
             $this->flash('danger', \__('flash.optimizer_slot_taken'));
@@ -87,7 +87,7 @@ class OptimizerController extends Controller
             return $this->redirect('/optimizer');
         }
 
-        $this->schedules->create(self::DEMO_USER_ID, [
+        $this->schedules->create($this->authUserId(), [
             'activity_id' => $activityId,
             'title' => $activity['title'],
             'start_at' => $startAt,
@@ -108,7 +108,7 @@ class OptimizerController extends Controller
             'input' => $input,
             'errors' => $errors,
             'suggestions' => $suggestions,
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'flash' => $flash,
         ]);
     }
@@ -141,7 +141,7 @@ class OptimizerController extends Controller
     {
         $errors = [];
 
-        if ($input['activity_id'] <= 0 || $this->activities->findByUser((int) $input['activity_id'], self::DEMO_USER_ID) === null) {
+        if ($input['activity_id'] <= 0 || $this->activities->findByUser((int) $input['activity_id'], $this->authUserId()) === null) {
             $errors['activity_id'] = \__('validation.valid_activity');
         }
 

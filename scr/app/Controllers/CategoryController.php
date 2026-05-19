@@ -23,7 +23,7 @@ class CategoryController extends Controller
     {
         return $this->view('categories/index', [
             'title' => 'Categories',
-            'categories' => $this->categories->allByUser(self::DEMO_USER_ID),
+            'categories' => $this->categories->allByUser($this->authUserId()),
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -53,7 +53,7 @@ class CategoryController extends Controller
         }
 
         try {
-            $this->categories->create(self::DEMO_USER_ID, $data);
+            $this->categories->create($this->authUserId(), $data);
             $this->flash('success', \__('flash.category_created'));
 
             return $this->redirect('/categories');
@@ -96,7 +96,7 @@ class CategoryController extends Controller
         }
 
         try {
-            $this->categories->update((int) $id, self::DEMO_USER_ID, $data);
+            $this->categories->update((int) $id, $this->authUserId(), $data);
             $this->flash('success', \__('flash.category_updated'));
 
             return $this->redirect('/categories');
@@ -136,7 +136,7 @@ class CategoryController extends Controller
             ]);
         }
 
-        $this->categories->delete((int) $id, self::DEMO_USER_ID);
+        $this->categories->delete((int) $id, $this->authUserId());
         $this->flash('success', \__('flash.category_deleted'));
 
         return $this->redirect('/categories');
@@ -177,7 +177,7 @@ class CategoryController extends Controller
 
     private function findCategoryOrFail(int $id): array
     {
-        $category = $this->categories->findByUser($id, self::DEMO_USER_ID);
+        $category = $this->categories->findByUser($id, $this->authUserId());
 
         if ($category !== null) {
             return $category;

@@ -31,13 +31,15 @@ class ScheduleController extends Controller
     {
         return $this->view('schedules/index', [
             'title' => 'Schedules',
-            'schedules' => $this->schedules->allByUser(self::DEMO_USER_ID),
+            'schedules' => $this->schedules->allByUser($this->authUserId()),
             'flash' => $this->consumeFlash(),
         ]);
     }
 
     public function calendar(): string
     {
+        $this->requireAuth();
+
         return $this->view('schedules/calendar', [
             'title' => 'Schedule Calendar',
         ]);
@@ -49,8 +51,8 @@ class ScheduleController extends Controller
 
         return json_encode(
             array_merge(
-                $this->schedules->calendarEventsByUser(self::DEMO_USER_ID),
-                $this->importantDates->calendarEventsByUser(self::DEMO_USER_ID)
+                $this->schedules->calendarEventsByUser($this->authUserId()),
+                $this->importantDates->calendarEventsByUser($this->authUserId())
             ),
             JSON_UNESCAPED_UNICODE
         ) ?: '[]';
@@ -61,7 +63,7 @@ class ScheduleController extends Controller
         return $this->view('schedules/create', [
             'title' => 'Create Schedule',
             'schedule' => $this->defaultSchedule(),
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'statuses' => self::STATUSES,
             'errors' => [],
         ]);
@@ -78,13 +80,13 @@ class ScheduleController extends Controller
             return $this->view('schedules/create', [
                 'title' => 'Create Schedule',
                 'schedule' => $data,
-                'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+                'activities' => $this->activities->allByUser($this->authUserId()),
                 'statuses' => self::STATUSES,
                 'errors' => $errors,
             ]);
         }
 
-        $this->schedules->create(self::DEMO_USER_ID, $data);
+        $this->schedules->create($this->authUserId(), $data);
         $this->flash('success', \__('flash.schedule_created'));
 
         return $this->redirect('/schedules');
@@ -97,7 +99,7 @@ class ScheduleController extends Controller
         return $this->view('schedules/edit', [
             'title' => 'Edit Schedule',
             'schedule' => $schedule,
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'statuses' => self::STATUSES,
             'errors' => [],
         ]);
@@ -115,13 +117,13 @@ class ScheduleController extends Controller
             return $this->view('schedules/edit', [
                 'title' => 'Edit Schedule',
                 'schedule' => array_merge($schedule, $data),
-                'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+                'activities' => $this->activities->allByUser($this->authUserId()),
                 'statuses' => self::STATUSES,
                 'errors' => $errors,
             ]);
         }
 
-        $this->schedules->update((int) $id, self::DEMO_USER_ID, $data);
+        $this->schedules->update((int) $id, $this->authUserId(), $data);
         $this->flash('success', \__('flash.schedule_updated'));
 
         return $this->redirect('/schedules');
@@ -138,7 +140,7 @@ class ScheduleController extends Controller
     public function destroy(string $id): string
     {
         $this->findScheduleOrFail((int) $id);
-        $this->schedules->delete((int) $id, self::DEMO_USER_ID);
+        $this->schedules->delete((int) $id, $this->authUserId());
         $this->flash('success', \__('flash.schedule_deleted'));
 
         return $this->redirect('/schedules');
@@ -175,7 +177,7 @@ class ScheduleController extends Controller
     {
         $errors = [];
 
-        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], self::DEMO_USER_ID) === null) {
+        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], $this->authUserId()) === null) {
             $errors['activity_id'] = \__('validation.valid_activity');
         }
 
@@ -216,7 +218,7 @@ class ScheduleController extends Controller
 
     private function findScheduleOrFail(int $id): array
     {
-        $schedule = $this->schedules->findByUser($id, self::DEMO_USER_ID);
+        $schedule = $this->schedules->findByUser($id, $this->authUserId());
 
         if ($schedule !== null) {
             return $schedule;

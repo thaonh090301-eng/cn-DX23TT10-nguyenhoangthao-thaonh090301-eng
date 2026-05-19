@@ -23,7 +23,7 @@ class ReminderController extends Controller
     {
         return $this->view('reminders/index', [
             'title' => __('nav.reminders'),
-            'reminders' => $this->reminders->allByUser(self::DEMO_USER_ID),
+            'reminders' => $this->reminders->allByUser($this->authUserId()),
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -52,7 +52,7 @@ class ReminderController extends Controller
             ]);
         }
 
-        $this->reminders->create(self::DEMO_USER_ID, $data);
+        $this->reminders->create($this->authUserId(), $data);
         $this->flash('success', __('flash.reminder_created'));
 
         return $this->redirect('/reminders');
@@ -83,7 +83,7 @@ class ReminderController extends Controller
             ]);
         }
 
-        $this->reminders->update((int) $id, self::DEMO_USER_ID, $data);
+        $this->reminders->update((int) $id, $this->authUserId(), $data);
         $this->flash('success', __('flash.reminder_updated'));
 
         return $this->redirect('/reminders');
@@ -92,7 +92,7 @@ class ReminderController extends Controller
     public function toggle(string $id): string
     {
         $reminder = $this->findReminderOrFail((int) $id);
-        $this->reminders->setActive((int) $id, self::DEMO_USER_ID, (int) $reminder['is_active'] !== 1);
+        $this->reminders->setActive((int) $id, $this->authUserId(), (int) $reminder['is_active'] !== 1);
         $this->flash('success', __('flash.reminder_toggled'));
 
         return $this->redirect('/reminders');
@@ -109,7 +109,7 @@ class ReminderController extends Controller
     public function destroy(string $id): string
     {
         $this->findReminderOrFail((int) $id);
-        $this->reminders->delete((int) $id, self::DEMO_USER_ID);
+        $this->reminders->delete((int) $id, $this->authUserId());
         $this->flash('success', __('flash.reminder_deleted'));
 
         return $this->redirect('/reminders');
@@ -126,7 +126,7 @@ class ReminderController extends Controller
                 'note' => $reminder['note'],
                 'remind_at' => $today . 'T' . substr((string) $reminder['remind_time'], 0, 8),
             ];
-        }, $this->reminders->activeForDate(self::DEMO_USER_ID, $today));
+        }, $this->reminders->activeForDate($this->authUserId(), $today));
 
         return (string) json_encode(['reminders' => $reminders], JSON_UNESCAPED_UNICODE);
     }
@@ -196,7 +196,7 @@ class ReminderController extends Controller
 
     private function findReminderOrFail(int $id): array
     {
-        $reminder = $this->reminders->findByUser($id, self::DEMO_USER_ID);
+        $reminder = $this->reminders->findByUser($id, $this->authUserId());
 
         if ($reminder !== null) {
             return $reminder;

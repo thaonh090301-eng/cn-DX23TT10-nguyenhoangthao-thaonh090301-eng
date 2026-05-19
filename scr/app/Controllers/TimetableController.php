@@ -28,8 +28,8 @@ class TimetableController extends Controller
     public function index(): string
     {
         $date = $this->dateFromRequest();
-        $schedules = $this->timetableRepository->schedulesForDate(self::DEMO_USER_ID, $date);
-        $reminders = $this->reminderRepository->activeForDate(self::DEMO_USER_ID, $date);
+        $schedules = $this->timetableRepository->schedulesForDate($this->authUserId(), $date);
+        $reminders = $this->reminderRepository->activeForDate($this->authUserId(), $date);
 
         return $this->view('timetable/index', [
             'title' => __('nav.timetable'),

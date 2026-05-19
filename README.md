@@ -69,6 +69,7 @@ Tai khoan demo trong seed:
 
 - Email: `demo@example.com`
 - Mat khau: `password`
+- Trang dang nhap: `http://localhost:8000/login`
 
 ### Chay ung dung
 

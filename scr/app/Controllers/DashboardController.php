@@ -27,23 +27,23 @@ class DashboardController extends Controller
     public function index(): string
     {
         $threshold = $this->personalThresholdMinutes();
-        $summary = $this->dashboard->summary(self::DEMO_USER_ID);
-        $personalMinutes = $this->dashboard->personalOrRecreationActualMinutesToday(self::DEMO_USER_ID);
+        $summary = $this->dashboard->summary($this->authUserId());
+        $personalMinutes = $this->dashboard->personalOrRecreationActualMinutesToday($this->authUserId());
         $alerts = $this->alerts($summary, $personalMinutes, $threshold);
         $productivityScore = $this->productivityScore($summary, $personalMinutes, $threshold);
 
         return $this->view('dashboard/index', [
             'title' => \__('nav.dashboard'),
             'summary' => $summary,
-            'plannedByCategory' => $this->dashboard->plannedMinutesByCategoryThisWeek(self::DEMO_USER_ID),
-            'actualByCategory' => $this->dashboard->actualMinutesByCategoryThisWeek(self::DEMO_USER_ID),
+            'plannedByCategory' => $this->dashboard->plannedMinutesByCategoryThisWeek($this->authUserId()),
+            'actualByCategory' => $this->dashboard->actualMinutesByCategoryThisWeek($this->authUserId()),
             'alerts' => $alerts,
             'personalThresholdMinutes' => $threshold,
             'personalActualMinutes' => $personalMinutes,
             'productivityScore' => $productivityScore,
             'productivityBadges' => $this->productivityBadges($summary, $alerts),
-            'upcomingReminders' => $this->reminders->upcomingToday(self::DEMO_USER_ID, 4),
-            'upcomingImportantDates' => $this->importantDates->upcomingWithinDays(self::DEMO_USER_ID, 7, 4),
+            'upcomingReminders' => $this->reminders->upcomingToday($this->authUserId(), 4),
+            'upcomingImportantDates' => $this->importantDates->upcomingWithinDays($this->authUserId(), 7, 4),
         ]);
     }
 

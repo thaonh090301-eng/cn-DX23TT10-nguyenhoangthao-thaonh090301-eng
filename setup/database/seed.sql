@@ -9,6 +9,7 @@ VALUES (
 )
 ON DUPLICATE KEY UPDATE
     name = VALUES(name),
+    password_hash = VALUES(password_hash),
     role = VALUES(role);
 
 SET @demo_user_id = (

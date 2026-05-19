@@ -29,7 +29,7 @@ class TimeLogController extends Controller
     public function index(): string
     {
         $date = $this->dateFromRequest();
-        $reportRows = array_map(fn (array $row): array => $this->withReportStatus($row), $this->timeLogs->dailyReportByUser(self::DEMO_USER_ID, $date));
+        $reportRows = array_map(fn (array $row): array => $this->withReportStatus($row), $this->timeLogs->dailyReportByUser($this->authUserId(), $date));
 
         return $this->view('time_logs/index', [
             'title' => \__('nav.time_logs'),
@@ -45,7 +45,7 @@ class TimeLogController extends Controller
         return $this->view('time_logs/create', [
             'title' => \__('time_report.action.unscheduled'),
             'timeLog' => $this->defaultTimeLog(),
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'errors' => [],
         ]);
     }
@@ -61,12 +61,12 @@ class TimeLogController extends Controller
             return $this->view('time_logs/create', [
                 'title' => \__('time_report.action.unscheduled'),
                 'timeLog' => $data,
-                'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+                'activities' => $this->activities->allByUser($this->authUserId()),
                 'errors' => $errors,
             ]);
         }
 
-        $this->timeLogs->create(self::DEMO_USER_ID, $data);
+        $this->timeLogs->create($this->authUserId(), $data);
         $this->flash('success', \__('flash.time_log_created'));
 
         return $this->redirect('/time-logs?date=' . urlencode(substr((string) $data['started_at'], 0, 10)));
@@ -74,20 +74,20 @@ class TimeLogController extends Controller
 
     public function confirmSchedule(string $id): string
     {
-        $schedule = $this->schedules->findByUser((int) $id, self::DEMO_USER_ID);
+        $schedule = $this->schedules->findByUser((int) $id, $this->authUserId());
 
         if ($schedule === null) {
             http_response_code(404);
             exit(\__('not_found.schedule'));
         }
 
-        if ($this->timeLogs->findBySchedule((int) $id, self::DEMO_USER_ID) !== null) {
+        if ($this->timeLogs->findBySchedule((int) $id, $this->authUserId()) !== null) {
             $this->flash('warning', \__('flash.time_log_schedule_duplicate'));
 
             return $this->redirect('/time-logs?date=' . urlencode(substr((string) $schedule['start_at'], 0, 10)));
         }
 
-        $this->timeLogs->createFromSchedule(self::DEMO_USER_ID, $schedule);
+        $this->timeLogs->createFromSchedule($this->authUserId(), $schedule);
         $this->flash('success', \__('flash.time_log_schedule_confirmed'));
 
         return $this->redirect('/time-logs?date=' . urlencode(substr((string) $schedule['start_at'], 0, 10)));
@@ -100,7 +100,7 @@ class TimeLogController extends Controller
         return $this->view('time_logs/edit', [
             'title' => \__('page.edit_time_log'),
             'timeLog' => $timeLog,
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'errors' => [],
         ]);
     }
@@ -117,12 +117,12 @@ class TimeLogController extends Controller
             return $this->view('time_logs/edit', [
                 'title' => \__('page.edit_time_log'),
                 'timeLog' => array_merge($timeLog, $data),
-                'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+                'activities' => $this->activities->allByUser($this->authUserId()),
                 'errors' => $errors,
             ]);
         }
 
-        $this->timeLogs->update((int) $id, self::DEMO_USER_ID, $data);
+        $this->timeLogs->update((int) $id, $this->authUserId(), $data);
         $this->flash('success', \__('flash.time_log_updated'));
 
         return $this->redirect('/time-logs?date=' . urlencode(substr((string) $data['started_at'], 0, 10)));
@@ -139,7 +139,7 @@ class TimeLogController extends Controller
     public function destroy(string $id): string
     {
         $this->findTimeLogOrFail((int) $id);
-        $this->timeLogs->delete((int) $id, self::DEMO_USER_ID);
+        $this->timeLogs->delete((int) $id, $this->authUserId());
         $this->flash('success', \__('flash.time_log_deleted'));
 
         return $this->redirect('/time-logs');
@@ -190,7 +190,7 @@ class TimeLogController extends Controller
     {
         $errors = [];
 
-        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], self::DEMO_USER_ID) === null) {
+        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], $this->authUserId()) === null) {
             $errors['activity_id'] = \__('validation.valid_activity');
         }
 
@@ -316,7 +316,7 @@ class TimeLogController extends Controller
 
     private function findTimeLogOrFail(int $id): array
     {
-        $timeLog = $this->timeLogs->findByUser($id, self::DEMO_USER_ID);
+        $timeLog = $this->timeLogs->findByUser($id, $this->authUserId());
 
         if ($timeLog !== null) {
             return $timeLog;

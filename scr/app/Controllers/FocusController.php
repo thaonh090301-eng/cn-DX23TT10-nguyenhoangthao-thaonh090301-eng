@@ -28,7 +28,7 @@ class FocusController extends Controller
     {
         return $this->view('focus/index', [
             'title' => __('nav.focus'),
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'durations' => self::DURATIONS,
             'focus' => $this->defaultFocus(),
             'errors' => [],
@@ -46,7 +46,7 @@ class FocusController extends Controller
 
             return $this->view('focus/index', [
                 'title' => __('nav.focus'),
-                'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+                'activities' => $this->activities->allByUser($this->authUserId()),
                 'durations' => self::DURATIONS,
                 'focus' => $data,
                 'errors' => $errors,
@@ -54,13 +54,13 @@ class FocusController extends Controller
             ]);
         }
 
-        $this->timeLogs->create(self::DEMO_USER_ID, [
+        $this->timeLogs->create($this->authUserId(), [
             'activity_id' => $data['activity_id'],
             'schedule_id' => null,
             'started_at' => $data['started_at'],
             'ended_at' => $data['ended_at'],
             'duration_minutes' => $data['duration_minutes'],
-            'note' => 'Tạo từ chế độ tập trung',
+            'note' => 'Táº¡o tá»« cháº¿ Ä‘á»™ táº­p trung',
         ]);
         $this->flash('success', __('flash.focus_saved'));
 
@@ -91,7 +91,7 @@ class FocusController extends Controller
     {
         $errors = [];
 
-        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], self::DEMO_USER_ID) === null) {
+        if ($data['activity_id'] <= 0 || $this->activities->findByUser($data['activity_id'], $this->authUserId()) === null) {
             $errors['activity_id'] = __('validation.valid_activity');
         }
 

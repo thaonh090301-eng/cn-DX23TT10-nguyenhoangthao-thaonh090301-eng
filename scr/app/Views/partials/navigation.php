@@ -17,6 +17,7 @@ $navItems = [
     'activities' => ['label' => __('nav.activities'), 'href' => '/activities'],
     'categories' => ['label' => __('nav.categories'), 'href' => '/categories'],
     'time_logs' => ['label' => __('nav.time_logs'), 'href' => '/time-logs'],
+    'account' => ['label' => __('nav.account'), 'href' => '/account'],
 ];
 
 $workspacePages = [
@@ -98,6 +99,12 @@ $workspacePages = [
         'quickLabel' => __('time_report.action.unscheduled'),
         'quickHref' => '/time-logs/create',
     ],
+    'account' => [
+        'title' => __('nav.account'),
+        'subtitle' => __('account.eyebrow'),
+        'quickLabel' => '',
+        'quickHref' => '',
+    ],
 ];
 
 $workspacePage = $workspacePages[$activeNav] ?? $workspacePages['home'];
@@ -133,6 +140,11 @@ $currentLocale = Lang::locale();
     </div>
 
     <div class="topbar-actions">
+        <?php if (!empty($currentUser)): ?>
+            <a class="user-chip" href="/account">
+                <span><?= $e($currentUser['name'] ?: 'Demo User') ?></span>
+            </a>
+        <?php endif; ?>
         <?php if ($workspacePage['quickHref'] !== ''): ?>
             <a class="button primary" href="<?= $e($workspacePage['quickHref']) ?>">
                 <?= $e($workspacePage['quickLabel']) ?>
@@ -215,6 +227,11 @@ $currentLocale = Lang::locale();
                 <?= $e(__('language.en')) ?>
             </a>
         </div>
+        <?php if (!empty($currentUser)): ?>
+            <form class="logout-inline" method="post" action="/logout">
+                <button class="button ghost compact" type="submit"><?= $e(__('auth.logout')) ?></button>
+            </form>
+        <?php endif; ?>
     </div>
 </header>
 

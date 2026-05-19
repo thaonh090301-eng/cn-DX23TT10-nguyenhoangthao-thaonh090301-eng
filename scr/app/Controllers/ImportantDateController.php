@@ -23,7 +23,7 @@ class ImportantDateController extends Controller
     {
         return $this->view('important_dates/index', [
             'title' => __('nav.important_dates'),
-            'importantDates' => $this->importantDates->allByUser(self::DEMO_USER_ID),
+            'importantDates' => $this->importantDates->allByUser($this->authUserId()),
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -54,7 +54,7 @@ class ImportantDateController extends Controller
             ]);
         }
 
-        $this->importantDates->create(self::DEMO_USER_ID, $data);
+        $this->importantDates->create($this->authUserId(), $data);
         $this->flash('success', __('flash.important_date_created'));
 
         return $this->redirect('/important-dates');
@@ -87,7 +87,7 @@ class ImportantDateController extends Controller
             ]);
         }
 
-        $this->importantDates->update((int) $id, self::DEMO_USER_ID, $data);
+        $this->importantDates->update((int) $id, $this->authUserId(), $data);
         $this->flash('success', __('flash.important_date_updated'));
 
         return $this->redirect('/important-dates');
@@ -104,7 +104,7 @@ class ImportantDateController extends Controller
     public function destroy(string $id): string
     {
         $this->findImportantDateOrFail((int) $id);
-        $this->importantDates->delete((int) $id, self::DEMO_USER_ID);
+        $this->importantDates->delete((int) $id, $this->authUserId());
         $this->flash('success', __('flash.important_date_deleted'));
 
         return $this->redirect('/important-dates');
@@ -174,7 +174,7 @@ class ImportantDateController extends Controller
 
     private function findImportantDateOrFail(int $id): array
     {
-        $importantDate = $this->importantDates->findByUser($id, self::DEMO_USER_ID);
+        $importantDate = $this->importantDates->findByUser($id, $this->authUserId());
 
         if ($importantDate !== null) {
             return $importantDate;

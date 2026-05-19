@@ -31,6 +31,7 @@ class Controller
         }
 
         $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $currentUser = $data['currentUser'] ?? $this->currentUser();
 
         extract($data, EXTR_SKIP);
 
@@ -44,5 +45,44 @@ class Controller
     {
         header('Location: ' . $path);
         exit;
+    }
+
+    protected function requireAuth(): void
+    {
+        if ($this->currentUserId() !== null) {
+            return;
+        }
+
+        $_SESSION['intended_path'] = $_SERVER['REQUEST_URI'] ?? '/dashboard';
+        $this->redirect('/login');
+    }
+
+    protected function currentUserId(): ?int
+    {
+        $userId = $_SESSION['user_id'] ?? null;
+
+        return is_numeric($userId) ? (int) $userId : null;
+    }
+
+    protected function currentUser(): ?array
+    {
+        $userId = $this->currentUserId();
+
+        if ($userId === null) {
+            return null;
+        }
+
+        return [
+            'id' => $userId,
+            'name' => (string) ($_SESSION['user_name'] ?? 'Demo User'),
+            'email' => (string) ($_SESSION['user_email'] ?? ''),
+        ];
+    }
+
+    protected function authUserId(): int
+    {
+        $this->requireAuth();
+
+        return (int) $this->currentUserId();
     }
 }

@@ -26,7 +26,7 @@ class ActivityController extends Controller
     {
         return $this->view('activities/index', [
             'title' => 'Activities',
-            'activities' => $this->activities->allByUser(self::DEMO_USER_ID),
+            'activities' => $this->activities->allByUser($this->authUserId()),
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -36,7 +36,7 @@ class ActivityController extends Controller
         return $this->view('activities/create', [
             'title' => 'Create Activity',
             'activity' => $this->defaultActivity(),
-            'categories' => $this->categories->allByUser(self::DEMO_USER_ID),
+            'categories' => $this->categories->allByUser($this->authUserId()),
             'priorities' => self::PRIORITIES,
             'errors' => [],
         ]);
@@ -53,13 +53,13 @@ class ActivityController extends Controller
             return $this->view('activities/create', [
                 'title' => 'Create Activity',
                 'activity' => $data,
-                'categories' => $this->categories->allByUser(self::DEMO_USER_ID),
+                'categories' => $this->categories->allByUser($this->authUserId()),
                 'priorities' => self::PRIORITIES,
                 'errors' => $errors,
             ]);
         }
 
-        $this->activities->create(self::DEMO_USER_ID, $data);
+        $this->activities->create($this->authUserId(), $data);
         $this->flash('success', \__('flash.activity_created'));
 
         return $this->redirect('/activities');
@@ -72,7 +72,7 @@ class ActivityController extends Controller
         return $this->view('activities/edit', [
             'title' => 'Edit Activity',
             'activity' => $activity,
-            'categories' => $this->categories->allByUser(self::DEMO_USER_ID),
+            'categories' => $this->categories->allByUser($this->authUserId()),
             'priorities' => self::PRIORITIES,
             'errors' => [],
         ]);
@@ -90,13 +90,13 @@ class ActivityController extends Controller
             return $this->view('activities/edit', [
                 'title' => 'Edit Activity',
                 'activity' => array_merge($activity, $data),
-                'categories' => $this->categories->allByUser(self::DEMO_USER_ID),
+                'categories' => $this->categories->allByUser($this->authUserId()),
                 'priorities' => self::PRIORITIES,
                 'errors' => $errors,
             ]);
         }
 
-        $this->activities->update((int) $id, self::DEMO_USER_ID, $data);
+        $this->activities->update((int) $id, $this->authUserId(), $data);
         $this->flash('success', \__('flash.activity_updated'));
 
         return $this->redirect('/activities');
@@ -135,7 +135,7 @@ class ActivityController extends Controller
             ]);
         }
 
-        $this->activities->delete((int) $id, self::DEMO_USER_ID);
+        $this->activities->delete((int) $id, $this->authUserId());
         $this->flash('success', \__('flash.activity_deleted'));
 
         return $this->redirect('/activities');
@@ -161,7 +161,7 @@ class ActivityController extends Controller
             $errors['title'] = \__('validation.activity_title_required');
         }
 
-        if ($data['category_id'] <= 0 || $this->categories->findByUser($data['category_id'], self::DEMO_USER_ID) === null) {
+        if ($data['category_id'] <= 0 || $this->categories->findByUser($data['category_id'], $this->authUserId()) === null) {
             $errors['category_id'] = \__('validation.valid_category');
         }
 
@@ -190,7 +190,7 @@ class ActivityController extends Controller
 
     private function findActivityOrFail(int $id): array
     {
-        $activity = $this->activities->findByUser($id, self::DEMO_USER_ID);
+        $activity = $this->activities->findByUser($id, $this->authUserId());
 
         if ($activity !== null) {
             return $activity;

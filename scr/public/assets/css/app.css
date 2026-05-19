@@ -395,6 +395,35 @@ p {
     max-width: 100%;
 }
 
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--button-compact-height);
+    max-width: 180px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: var(--small-font-size);
+    font-weight: 800;
+    padding: var(--button-compact-y) var(--button-compact-x);
+}
+
+.user-chip span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-chip:hover {
+    background: var(--panel-muted);
+    text-decoration: none;
+}
+
+.logout-inline {
+    margin: 0;
+}
+
 .quick-add,
 .personalization {
     position: relative;
@@ -716,6 +745,83 @@ p {
     background: var(--panel);
     padding: var(--panel-padding);
     box-shadow: var(--shadow-soft);
+}
+
+.login-shell {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    background:
+        radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 30%),
+        var(--bg);
+    padding: var(--space-page);
+}
+
+.login-panel {
+    display: grid;
+    gap: var(--space-section);
+    width: min(480px, 100%);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: calc(var(--panel-padding) + 8px);
+    box-shadow: var(--shadow);
+}
+
+.login-panel h1 {
+    margin-bottom: 8px;
+}
+
+.demo-credentials {
+    display: grid;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    color: var(--muted);
+    font-size: var(--small-font-size);
+    padding: var(--button-y) var(--button-x);
+}
+
+.demo-credentials strong {
+    color: var(--text);
+}
+
+.account-panel {
+    display: grid;
+    gap: var(--space-section);
+}
+
+.account-profile {
+    display: grid;
+    align-items: center;
+    gap: var(--dashboard-gap);
+    grid-template-columns: 72px minmax(0, 1fr);
+}
+
+.account-profile h2 {
+    margin: 0 0 4px;
+    font-size: var(--topbar-heading-size);
+    line-height: 1.2;
+}
+
+.account-avatar {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.account-stats {
+    display: grid;
+    gap: var(--dashboard-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .table-wrap {
@@ -2028,6 +2134,7 @@ button.compact {
     .dashboard-grid,
     .split-grid,
     .productivity-score-card,
+    .account-stats,
     .assistant-grid,
     .assistant-grid.compact,
     .time-report-summary,

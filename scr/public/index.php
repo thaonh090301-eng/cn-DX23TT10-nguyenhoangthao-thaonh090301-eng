@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Core\Router;
 
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH', BASE_PATH . DIRECTORY_SEPARATOR . 'app');

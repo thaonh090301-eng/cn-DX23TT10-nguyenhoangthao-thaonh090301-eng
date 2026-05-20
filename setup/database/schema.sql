@@ -9,6 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS time_logs;
 DROP TABLE IF EXISTS schedules;
 DROP TABLE IF EXISTS reminders;
+DROP TABLE IF EXISTS important_dates;
 DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
@@ -96,6 +97,24 @@ CREATE TABLE reminders (
     KEY idx_reminders_user_time (user_id, remind_time),
     KEY idx_reminders_active (user_id, is_active),
     CONSTRAINT fk_reminders_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE important_dates (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    title VARCHAR(180) NOT NULL,
+    event_date DATE NOT NULL,
+    `type` ENUM('holiday', 'travel', 'date', 'anniversary', 'deadline', 'birthday', 'exam', 'other') NOT NULL DEFAULT 'other',
+    note TEXT NULL,
+    remind_before_days INT UNSIGNED NOT NULL DEFAULT 7,
+    repeat_yearly TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_important_dates_user_date (user_id, event_date),
+    KEY idx_important_dates_user_type (user_id, `type`),
+    CONSTRAINT fk_important_dates_user
         FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

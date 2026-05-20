@@ -60,7 +60,7 @@ class FocusController extends Controller
             'started_at' => $data['started_at'],
             'ended_at' => $data['ended_at'],
             'duration_minutes' => $data['duration_minutes'],
-            'note' => 'Táº¡o tá»« cháº¿ Ä‘á»™ táº­p trung',
+            'note' => 'Created from focus mode.',
         ]);
         $this->flash('success', __('flash.focus_saved'));
 

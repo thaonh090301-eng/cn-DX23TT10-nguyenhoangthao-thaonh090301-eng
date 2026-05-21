@@ -22,9 +22,14 @@ $reminderTitle = static fn (array $schedule): string => display_activity_title($
             </div>
             <div class="header-actions">
                 <a class="button" href="/calendar"><?= $e(__('timetable.action.open_calendar')) ?></a>
-                <a class="button primary" href="/schedules/create"><?= $e(__('timetable.action.add_schedule')) ?></a>
             </div>
         </section>
+
+        <?php foreach (['success', 'warning', 'danger'] as $flashType): ?>
+            <?php if (!empty($flash[$flashType])): ?>
+                <div class="alert <?= $e($flashType) ?>"><?= $e($flash[$flashType]) ?></div>
+            <?php endif; ?>
+        <?php endforeach; ?>
 
         <section class="panel dashboard-section timetable-toolbar">
             <form class="filter-bar time-report-filter" method="get" action="/timetable">
@@ -57,11 +62,76 @@ $reminderTitle = static fn (array $schedule): string => display_activity_title($
             </div>
         </section>
 
+        <section class="panel dashboard-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow"><?= $e(__('nav.schedules')) ?></p>
+                    <h2><?= $e(__('timetable.action.add_schedule')) ?></h2>
+                </div>
+            </div>
+
+            <?php if ($activities === []): ?>
+                <div class="alert danger"><?= $e(__('message.create_activity_before_schedules')) ?></div>
+            <?php else: ?>
+                <form class="form-stack" method="post" action="/timetable/schedules">
+                    <input type="hidden" name="date" value="<?= $e($selectedDate) ?>">
+
+                    <div class="form-grid">
+                        <label>
+                            <span><?= $e(__('label.activity')) ?></span>
+                            <select name="activity_id" required>
+                                <option value=""><?= $e(__('option.choose_activity')) ?></option>
+                                <?php foreach ($activities as $activity): ?>
+                                    <option value="<?= $e($activity['id']) ?>" <?= ((int) ($newSchedule['activity_id'] ?? 0) === (int) $activity['id']) ? 'selected' : '' ?>>
+                                        <?= $e(display_activity_title($activity['title'])) ?> - <?= $e(display_category_name($activity['category_name'])) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if (!empty($errors['activity_id'])): ?>
+                                <small class="field-error"><?= $e($errors['activity_id']) ?></small>
+                            <?php endif; ?>
+                        </label>
+
+                        <label>
+                            <span><?= $e(__('label.title')) ?></span>
+                            <input type="text" name="title" value="<?= $e($newSchedule['title'] ?? '') ?>">
+                        </label>
+                    </div>
+
+                    <div class="form-grid">
+                        <label>
+                            <span><?= $e(__('label.start_time')) ?></span>
+                            <input type="time" name="start_time" value="<?= $e($newSchedule['start_time'] ?? '08:00') ?>" required>
+                            <?php if (!empty($errors['start_time'])): ?>
+                                <small class="field-error"><?= $e($errors['start_time']) ?></small>
+                            <?php endif; ?>
+                        </label>
+
+                        <label>
+                            <span><?= $e(__('label.end_time')) ?></span>
+                            <input type="time" name="end_time" value="<?= $e($newSchedule['end_time'] ?? '09:00') ?>" required>
+                            <?php if (!empty($errors['end_time'])): ?>
+                                <small class="field-error"><?= $e($errors['end_time']) ?></small>
+                            <?php endif; ?>
+                        </label>
+                    </div>
+
+                    <label>
+                        <span><?= $e(__('label.notes')) ?></span>
+                        <textarea name="notes" rows="2"><?= $e($newSchedule['notes'] ?? '') ?></textarea>
+                    </label>
+
+                    <div class="form-actions">
+                        <button class="button primary" type="submit"><?= $e(__('timetable.action.add_schedule')) ?></button>
+                    </div>
+                </form>
+            <?php endif; ?>
+        </section>
+
         <section class="panel">
             <?php if ($items === []): ?>
                 <div class="empty-state">
                     <p><?= $e(__('timetable.empty')) ?></p>
-                    <a class="button primary" href="/schedules/create"><?= $e(__('timetable.action.add_schedule')) ?></a>
                 </div>
             <?php else: ?>
                 <div
@@ -217,7 +287,11 @@ $reminderTitle = static fn (array $schedule): string => display_activity_title($
                         shown.add(id);
                         showToast(message);
 
-                        if ('Notification' in window && Notification.permission === 'granted') {
+                        if (
+                            window.localStorage.getItem('pto-notifications-enabled') === '1'
+                            && 'Notification' in window
+                            && Notification.permission === 'granted'
+                        ) {
                             new Notification(message);
                         }
                     }

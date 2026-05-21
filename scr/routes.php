@@ -32,6 +32,7 @@ $router->post('/assistant', [AssistantController::class, 'generate']);
 $router->get('/focus', [FocusController::class, 'index']);
 $router->post('/focus', [FocusController::class, 'store']);
 $router->get('/timetable', [TimetableController::class, 'index']);
+$router->post('/timetable/schedules', [TimetableController::class, 'storeSchedule']);
 $router->get('/optimizer', [OptimizerController::class, 'index']);
 $router->post('/optimizer', [OptimizerController::class, 'suggest']);
 $router->post('/optimizer/schedule', [OptimizerController::class, 'createSchedule']);

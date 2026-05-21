@@ -23,7 +23,6 @@ class AssistantController extends Controller
         return $this->view('assistant/index', [
             'title' => __('nav.assistant'),
             'suggestions' => $this->assistant->generate($this->authUserId()),
-            'generatedAt' => date('Y-m-d H:i:s'),
         ]);
     }
 

@@ -24,12 +24,11 @@
                     <p class="eyebrow"><?= $e(__('section.suggestions')) ?></p>
                     <h2><?= $e(__('assistant.panel_title')) ?></h2>
                 </div>
-                <span class="threshold-note"><?= $e(__('assistant.generated_at', ['time' => format_app_time($generatedAt)])) ?></span>
             </div>
             <p><?= $e(__('assistant.description')) ?></p>
         </section>
 
-        <section class="assistant-grid" aria-label="<?= $e(__('assistant.suggestions_label')) ?>">
+        <section class="assistant-grid" data-assistant-refresh aria-label="<?= $e(__('assistant.suggestions_label')) ?>">
             <?php foreach ($suggestions as $suggestion): ?>
                 <article class="assistant-card <?= $e($suggestion['severity']) ?>">
                     <div class="assistant-card-header">

@@ -29,7 +29,6 @@
             <?php if ($importantDates === []): ?>
                 <div class="empty-state">
                     <p><?= $e(__('empty.important_dates')) ?></p>
-                    <a class="button primary" href="/important-dates/create"><?= $e(__('action.new_important_date')) ?></a>
                 </div>
             <?php else: ?>
                 <div class="important-date-grid">

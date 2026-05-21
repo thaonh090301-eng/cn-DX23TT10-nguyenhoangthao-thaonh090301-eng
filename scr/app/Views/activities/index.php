@@ -24,13 +24,12 @@
         <?php endif; ?>
 
         <section class="panel">
-            <?php if ($activities === []): ?>
+            <?php if (($hasActivities ?? true) === false): ?>
                 <div class="empty-state">
                     <p><?= $e(__('empty.activities')) ?></p>
-                    <a class="button primary" href="/activities/create"><?= $e(__('action.new_activity')) ?></a>
                 </div>
             <?php else: ?>
-                <div class="filter-bar" data-filter-controls data-filter-target="activities-table">
+                <form class="filter-bar" method="get" action="/activities" data-filter-controls data-filter-target="activities-table">
                     <label class="filter-field">
                         <span><?= $e(__('filter.search')) ?></span>
                         <input type="search" data-filter-search placeholder="<?= $e(__('filter.search_placeholder')) ?>">
@@ -43,11 +42,16 @@
                     </label>
                     <label class="filter-field">
                         <span><?= $e(__('label.status')) ?></span>
-                        <select data-filter-select="status">
-                            <option value=""><?= $e(__('filter.all_statuses')) ?></option>
+                        <select name="status" onchange="this.form.submit()">
+                            <option value="all" <?= ($selectedStatus ?? 'all') === 'all' ? 'selected' : '' ?>><?= $e(__('filter.all_statuses')) ?></option>
+                            <option value="active" <?= ($selectedStatus ?? 'all') === 'active' ? 'selected' : '' ?>><?= $e(__('status.active')) ?></option>
+                            <option value="inactive" <?= ($selectedStatus ?? 'all') === 'inactive' ? 'selected' : '' ?>><?= $e(__('status.inactive')) ?></option>
                         </select>
                     </label>
-                </div>
+                </form>
+                <?php if ($activities === []): ?>
+                    <p class="empty-state"><?= $e(__('filter.no_results')) ?></p>
+                <?php else: ?>
                 <div class="table-wrap">
                     <table id="activities-table">
                         <thead>
@@ -88,6 +92,7 @@
                     </table>
                 </div>
                 <p class="empty-state filter-empty" data-filter-empty="activities-table" hidden><?= $e(__('filter.no_results')) ?></p>
+                <?php endif; ?>
             <?php endif; ?>
         </section>
     </main>

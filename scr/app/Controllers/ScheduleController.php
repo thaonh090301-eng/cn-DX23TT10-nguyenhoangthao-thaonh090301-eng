@@ -29,9 +29,21 @@ class ScheduleController extends Controller
 
     public function index(): string
     {
+        $statusFilter = $this->statusFilter();
+        $schedules = $this->schedules->allByUser($this->authUserId());
+        $hasSchedules = $schedules !== [];
+
+        if ($statusFilter !== 'all') {
+            $schedules = array_values(array_filter($schedules, static function (array $schedule) use ($statusFilter): bool {
+                return (string) $schedule['status'] === $statusFilter;
+            }));
+        }
+
         return $this->view('schedules/index', [
             'title' => 'Schedules',
-            'schedules' => $this->schedules->allByUser($this->authUserId()),
+            'schedules' => $schedules,
+            'hasSchedules' => $hasSchedules,
+            'selectedStatus' => $statusFilter,
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -214,6 +226,13 @@ class ScheduleController extends Controller
             'status' => 'scheduled',
             'notes' => '',
         ];
+    }
+
+    private function statusFilter(): string
+    {
+        $status = (string) ($_GET['status'] ?? 'all');
+
+        return in_array($status, ['all', ...self::STATUSES], true) ? $status : 'all';
     }
 
     private function findScheduleOrFail(int $id): array

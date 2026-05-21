@@ -24,9 +24,23 @@ class ActivityController extends Controller
 
     public function index(): string
     {
+        $statusFilter = $this->statusFilter();
+        $activities = $this->activities->allByUser($this->authUserId());
+        $hasActivities = $activities !== [];
+
+        if ($statusFilter !== 'all') {
+            $activities = array_values(array_filter($activities, static function (array $activity) use ($statusFilter): bool {
+                $isActive = (int) $activity['is_active'] === 1;
+
+                return $statusFilter === 'active' ? $isActive : !$isActive;
+            }));
+        }
+
         return $this->view('activities/index', [
             'title' => 'Activities',
-            'activities' => $this->activities->allByUser($this->authUserId()),
+            'activities' => $activities,
+            'hasActivities' => $hasActivities,
+            'selectedStatus' => $statusFilter,
             'flash' => $this->consumeFlash(),
         ]);
     }
@@ -186,6 +200,13 @@ class ActivityController extends Controller
             'estimated_minutes' => 30,
             'is_active' => 1,
         ];
+    }
+
+    private function statusFilter(): string
+    {
+        $status = (string) ($_GET['status'] ?? 'all');
+
+        return in_array($status, ['all', 'active', 'inactive'], true) ? $status : 'all';
     }
 
     private function findActivityOrFail(int $id): array

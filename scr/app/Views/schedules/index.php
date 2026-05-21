@@ -27,13 +27,12 @@
         <?php endif; ?>
 
         <section class="panel">
-            <?php if ($schedules === []): ?>
+            <?php if (($hasSchedules ?? true) === false): ?>
                 <div class="empty-state">
                     <p><?= $e(__('empty.schedules')) ?></p>
-                    <a class="button primary" href="/schedules/create"><?= $e(__('action.new_schedule')) ?></a>
                 </div>
             <?php else: ?>
-                <div class="filter-bar" data-filter-controls data-filter-target="schedules-table">
+                <form class="filter-bar" method="get" action="/schedules" data-filter-controls data-filter-target="schedules-table">
                     <label class="filter-field">
                         <span><?= $e(__('filter.search')) ?></span>
                         <input type="search" data-filter-search placeholder="<?= $e(__('filter.search_placeholder')) ?>">
@@ -46,11 +45,19 @@
                     </label>
                     <label class="filter-field">
                         <span><?= $e(__('label.status')) ?></span>
-                        <select data-filter-select="status">
-                            <option value=""><?= $e(__('filter.all_statuses')) ?></option>
+                        <select name="status" onchange="this.form.submit()">
+                            <option value="all" <?= ($selectedStatus ?? 'all') === 'all' ? 'selected' : '' ?>><?= $e(__('filter.all_statuses')) ?></option>
+                            <?php foreach (['scheduled', 'completed', 'cancelled'] as $status): ?>
+                                <option value="<?= $e($status) ?>" <?= ($selectedStatus ?? 'all') === $status ? 'selected' : '' ?>>
+                                    <?= $e(__('schedule_status.' . $status)) ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </label>
-                </div>
+                </form>
+                <?php if ($schedules === []): ?>
+                    <p class="empty-state"><?= $e(__('filter.no_results')) ?></p>
+                <?php else: ?>
                 <div class="table-wrap">
                     <table id="schedules-table">
                         <thead>
@@ -96,6 +103,7 @@
                     </table>
                 </div>
                 <p class="empty-state filter-empty" data-filter-empty="schedules-table" hidden><?= $e(__('filter.no_results')) ?></p>
+                <?php endif; ?>
             <?php endif; ?>
         </section>
     </main>

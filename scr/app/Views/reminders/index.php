@@ -16,10 +16,7 @@
                 <p class="eyebrow"><?= $e(__('reminder.eyebrow')) ?></p>
                 <h1><?= $e(__('nav.reminders')) ?></h1>
             </div>
-            <div class="header-actions">
-                <button class="button" type="button" data-notification-permission><?= $e(__('reminder.allow_notifications')) ?></button>
-                <a class="button primary" href="/reminders/create"><?= $e(__('action.new_reminder')) ?></a>
-            </div>
+            <a class="button primary" href="/reminders/create"><?= $e(__('action.new_reminder')) ?></a>
         </section>
 
         <?php foreach (['success', 'warning', 'danger'] as $flashType): ?>
@@ -32,7 +29,6 @@
             <?php if ($reminders === []): ?>
                 <div class="empty-state">
                     <p><?= $e(__('empty.reminders')) ?></p>
-                    <a class="button primary" href="/reminders/create"><?= $e(__('action.new_reminder')) ?></a>
                 </div>
             <?php else: ?>
                 <div class="reminder-grid">

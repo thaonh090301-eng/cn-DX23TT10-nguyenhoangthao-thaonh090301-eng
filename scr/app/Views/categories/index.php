@@ -27,7 +27,6 @@
             <?php if ($categories === []): ?>
                 <div class="empty-state">
                     <p><?= $e(__('empty.categories')) ?></p>
-                    <a class="button primary" href="/categories/create"><?= $e(__('action.new_category')) ?></a>
                 </div>
             <?php else: ?>
                 <div class="table-wrap">

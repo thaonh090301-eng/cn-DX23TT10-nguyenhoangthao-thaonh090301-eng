@@ -27,7 +27,6 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
                 <h1><?= $e(__('time_report.title')) ?></h1>
             </div>
             <div class="header-actions">
-                <a class="button" href="/time-logs/create?date=<?= $e($selectedDate) ?>"><?= $e(__('time_report.action.unscheduled')) ?></a>
                 <button class="button primary" type="button" onclick="window.print()"><?= $e(__('time_report.action.print')) ?></button>
             </div>
         </section>
@@ -69,7 +68,6 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
             <?php if ($reportRows === []): ?>
                 <div class="empty-state">
                     <p><?= $e(__('time_report.empty')) ?></p>
-                    <a class="button primary" href="/schedules/create"><?= $e(__('action.new_schedule')) ?></a>
                 </div>
             <?php else: ?>
                 <div class="table-wrap report-table-wrap">
@@ -86,7 +84,6 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
                                 <th><?= $e(__('time_report.actual_duration')) ?></th>
                                 <th><?= $e(__('label.status')) ?></th>
                                 <th><?= $e(__('label.note')) ?></th>
-                                <th><?= $e(__('label.actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,19 +111,6 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
                                         </span>
                                     </td>
                                     <td><?= $e($note) ?></td>
-                                    <td class="actions report-actions">
-                                        <?php if ($row['time_log_id'] !== null): ?>
-                                            <a href="/time-logs/<?= $e($row['time_log_id']) ?>/edit"><?= $e(__('time_report.action.edit_actual')) ?></a>
-                                        <?php elseif ($row['schedule_id'] !== null): ?>
-                                            <form method="post" action="/time-logs/schedules/<?= $e($row['schedule_id']) ?>/confirm">
-                                                <button class="button compact primary" type="submit"><?= $e(__('time_report.action.confirm_schedule')) ?></button>
-                                            </form>
-                                        <?php endif; ?>
-
-                                        <?php if ($row['time_log_id'] !== null && $row['row_type'] === 'unscheduled'): ?>
-                                            <a class="danger-link" href="/time-logs/<?= $e($row['time_log_id']) ?>/delete"><?= $e(__('action.delete')) ?></a>
-                                        <?php endif; ?>
-                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

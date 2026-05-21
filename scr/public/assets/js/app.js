@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.addEventListener('click', (event) => {
-            if (!container.contains(event.target)) {
+            if (!container.contains(event.target) && !panel.contains(event.target)) {
                 close();
             }
         });
@@ -123,8 +123,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return close;
     };
 
-    setupDisclosure('.personalization', '[data-personalization-toggle]', '[data-personalization-panel]');
+    const closeSettingsPanel = setupDisclosure('.settings-menu', '[data-settings-toggle]', '[data-settings-panel]');
     setupDisclosure('.quick-add', '[data-quick-add-toggle]', '[data-quick-add-panel]');
+    const closeNotificationsPanel = setupDisclosure('.notification-bell-menu', '[data-notifications-toggle]', '[data-notifications-panel]');
+    const settingsToggle = document.querySelector('[data-settings-toggle]');
+    const settingsPanel = document.querySelector('[data-settings-panel]');
+
+    if (settingsPanel && settingsPanel.parentElement !== document.body) {
+        document.body.appendChild(settingsPanel);
+    }
+
+    const positionSettingsPanel = () => {
+        if (!settingsToggle || !settingsPanel || settingsPanel.hidden) {
+            return;
+        }
+
+        const margin = 12;
+        const gap = 10;
+        const toggleRect = settingsToggle.getBoundingClientRect();
+        const panelRect = settingsPanel.getBoundingClientRect();
+        let left = toggleRect.right + gap;
+        let top = toggleRect.top;
+
+        if (left + panelRect.width > window.innerWidth - margin) {
+            left = window.innerWidth - panelRect.width - margin;
+        }
+
+        if (top + panelRect.height > window.innerHeight - margin) {
+            top = window.innerHeight - panelRect.height - margin;
+        }
+
+        settingsPanel.style.left = `${Math.max(margin, left)}px`;
+        settingsPanel.style.top = `${Math.max(margin, top)}px`;
+    };
+
+    settingsToggle?.addEventListener('click', () => {
+        window.setTimeout(positionSettingsPanel, 0);
+    });
+    window.addEventListener('resize', positionSettingsPanel);
+    window.addEventListener('scroll', positionSettingsPanel, true);
 
     const legacyThemeToggle = document.querySelector('[data-theme-toggle]');
 
@@ -183,25 +220,284 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(toastConfig?.dataset.toastValidation || 'Please fix the highlighted fields.', 'danger');
     }
 
-    const notificationButton = document.querySelector('[data-notification-permission]');
+    const notificationToggles = Array.from(document.querySelectorAll('[data-notification-toggle]'));
+    const notificationBellToggle = document.querySelector('[data-notifications-toggle]');
+    const notificationBadge = document.querySelector('[data-notifications-count]');
+    const notificationList = document.querySelector('[data-notifications-list]');
+    const notificationStatusNote = document.querySelector('[data-notification-status-note]');
+    const notificationFilterButtons = Array.from(document.querySelectorAll('[data-notification-filter]'));
     const reminderToastTemplate = toastConfig?.dataset.reminderTemplate || 'Coming up: :title';
-    const shownReminderToasts = new Set();
+    const notificationUnsupportedMessage = toastConfig?.dataset.notificationUnsupported
+        || 'Notifications are not available in this browser.';
+    const notificationDefaultBody = toastConfig?.dataset.notificationDefaultBody || 'It is time for this reminder.';
+    const notificationEnabledStorageKey = 'pto-notifications-enabled';
+    const notifiedReminderCache = new Map();
+    let todayReminders = [];
+    let notificationFilter = 'all';
+    let notificationPollIntervalId = null;
 
-    notificationButton?.addEventListener('click', async () => {
+    const notificationPermissionState = () => {
         if (!('Notification' in window)) {
-            showToast(toastConfig?.dataset.notificationDenied || 'Notifications are not available in this browser.', 'warning');
+            return 'unsupported';
+        }
+
+        return Notification.permission;
+    };
+
+    const notificationsEnabled = () => {
+        try {
+            return window.localStorage.getItem(notificationEnabledStorageKey) === '1';
+        } catch (error) {
+            return false;
+        }
+    };
+
+    const setNotificationsEnabled = (enabled) => {
+        try {
+            window.localStorage.setItem(notificationEnabledStorageKey, enabled ? '1' : '0');
+        } catch (error) {
+            // Keep the toggle usable if storage is blocked.
+        }
+    };
+
+    const updateNotificationToggleUi = () => {
+        const enabled = notificationsEnabled();
+
+        notificationToggles.forEach((button) => {
+            button.setAttribute('aria-pressed', button.dataset.value === (enabled ? 'on' : 'off') ? 'true' : 'false');
+        });
+    };
+
+    const updateNotificationStatusNote = () => {
+        if (!notificationStatusNote || !toastConfig) {
             return;
         }
 
-        const permission = await Notification.requestPermission();
-        const message = permission === 'granted'
-            ? toastConfig?.dataset.notificationGranted
-            : toastConfig?.dataset.notificationDenied;
+        if (notificationsEnabled()) {
+            const state = notificationPermissionState();
 
-        showToast(message || '', permission === 'granted' ? 'success' : 'warning');
-    });
+            if (state === 'unsupported') {
+                notificationStatusNote.textContent = toastConfig.dataset.notificationStatusUnsupported || '';
+                return;
+            }
 
-    const checkPersonalReminders = async () => {
+            if (state === 'denied') {
+                notificationStatusNote.textContent = toastConfig.dataset.notificationStatusDenied || '';
+                return;
+            }
+
+            notificationStatusNote.textContent = toastConfig.dataset.notificationStatusGranted || '';
+            return;
+        }
+
+        notificationStatusNote.textContent = toastConfig.dataset.notificationStatusDefault || '';
+    };
+
+    const reminderDateKey = (remindAt) => {
+        const rawValue = String(remindAt || '');
+
+        if (/^\d{4}-\d{2}-\d{2}/.test(rawValue)) {
+            return rawValue.slice(0, 10);
+        }
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const reminderStorageKey = (dateKey) => `pto-reminders-notified:${dateKey}`;
+
+    const reminderNotificationKey = (reminder) => {
+        const id = String(reminder.id || '').trim();
+        const remindAt = String(reminder.remind_at || '').trim();
+
+        return `${id}:${remindAt}`;
+    };
+
+    const notifiedReminderKeysFor = (dateKey) => {
+        if (notifiedReminderCache.has(dateKey)) {
+            return notifiedReminderCache.get(dateKey);
+        }
+
+        let keys = new Set();
+
+        try {
+            const storedValue = window.localStorage.getItem(reminderStorageKey(dateKey));
+            const parsedValue = storedValue ? JSON.parse(storedValue) : [];
+
+            if (Array.isArray(parsedValue)) {
+                keys = new Set(parsedValue.map((value) => String(value)));
+            }
+        } catch (error) {
+            keys = new Set();
+        }
+
+        notifiedReminderCache.set(dateKey, keys);
+
+        return keys;
+    };
+
+    const saveNotifiedReminderKeys = (dateKey) => {
+        const keys = notifiedReminderKeysFor(dateKey);
+
+        try {
+            window.localStorage.setItem(reminderStorageKey(dateKey), JSON.stringify([...keys]));
+        } catch (error) {
+            // Reminder notifications still work for the current page if storage is unavailable.
+        }
+    };
+
+    const hasReminderBeenNotified = (reminder) => {
+        const dateKey = reminderDateKey(reminder.remind_at);
+
+        return notifiedReminderKeysFor(dateKey).has(reminderNotificationKey(reminder));
+    };
+
+    const markReminderNotified = (reminder) => {
+        const dateKey = reminderDateKey(reminder.remind_at);
+        const keys = notifiedReminderKeysFor(dateKey);
+
+        keys.add(reminderNotificationKey(reminder));
+        saveNotifiedReminderKeys(dateKey);
+    };
+
+    const showReminderFallback = (title) => {
+        const message = reminderToastTemplate.replace(':title', title);
+
+        showToast(message, 'warning');
+    };
+
+    const showReminderNotification = (reminder) => {
+        const title = String(reminder.title || '').trim() || 'Reminder';
+        const body = String(reminder.note || '').trim() || notificationDefaultBody;
+
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            showReminderFallback(title);
+            return;
+        }
+
+        try {
+            new Notification(title, { body });
+        } catch (error) {
+            showReminderFallback(title);
+        }
+    };
+
+    const formatNotificationTime = (value) => {
+        const date = new Date(value || '');
+
+        if (!Number.isFinite(date.getTime())) {
+            return '';
+        }
+
+        const locale = (root.lang || document.documentElement.lang || 'vi').toLowerCase().startsWith('en') ? 'en-US' : 'vi-VN';
+
+        return new Intl.DateTimeFormat(locale, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: locale === 'en-US',
+        }).format(date);
+    };
+
+    const renderNotificationList = () => {
+        if (notificationBadge) {
+            const count = todayReminders.length;
+            notificationBadge.hidden = count === 0;
+            notificationBadge.textContent = count > 9 ? '9+' : String(count);
+        }
+
+        updateNotificationStatusNote();
+
+        if (!notificationList) {
+            return;
+        }
+
+        const reminders = notificationFilter === 'unread'
+            ? todayReminders.filter((reminder) => !hasReminderBeenNotified(reminder))
+            : todayReminders;
+
+        if (reminders.length === 0) {
+            notificationList.innerHTML = '';
+            const empty = document.createElement('p');
+            empty.className = 'empty-state';
+            empty.textContent = notificationFilter === 'unread'
+                ? (toastConfig?.dataset.notificationUnreadEmpty || toastConfig?.dataset.notificationEmpty || 'No unread reminders.')
+                : (toastConfig?.dataset.notificationAllEmpty || toastConfig?.dataset.notificationEmpty || 'No reminders for today.');
+            notificationList.appendChild(empty);
+            return;
+        }
+
+        notificationList.innerHTML = '';
+
+        reminders
+            .slice()
+            .sort((a, b) => new Date(a.remind_at || '').getTime() - new Date(b.remind_at || '').getTime())
+            .forEach((reminder) => {
+                const item = document.createElement('article');
+                item.className = `notification-item${hasReminderBeenNotified(reminder) ? '' : ' unread'}`;
+
+                const head = document.createElement('div');
+                head.className = 'notification-item-head';
+
+                const title = document.createElement('strong');
+                title.textContent = String(reminder.title || '').trim() || 'Reminder';
+
+                const time = document.createElement('span');
+                time.className = 'notification-time';
+                time.textContent = formatNotificationTime(reminder.remind_at);
+
+                head.append(title, time);
+                item.appendChild(head);
+
+                const note = String(reminder.note || '').trim();
+
+                if (note !== '') {
+                    const noteElement = document.createElement('p');
+                    noteElement.textContent = note;
+                    item.appendChild(noteElement);
+                }
+
+                notificationList.appendChild(item);
+            });
+    };
+
+    const processDueReminders = (reminders) => {
+        if (!notificationsEnabled()) {
+            return;
+        }
+
+        if (notificationPermissionState() !== 'granted') {
+            setNotificationsEnabled(false);
+            updateNotificationToggleUi();
+            stopReminderPolling();
+            renderNotificationList();
+            return;
+        }
+
+        const now = Date.now();
+
+        reminders.forEach((reminder) => {
+            const start = new Date(reminder.remind_at || '').getTime();
+
+            if (!Number.isFinite(start)) {
+                return;
+            }
+
+            if (start > now || hasReminderBeenNotified(reminder)) {
+                return;
+            }
+
+            markReminderNotified(reminder);
+            showReminderNotification(reminder);
+        });
+
+        renderNotificationList();
+    };
+
+    const loadTodayReminders = async (notify = false) => {
         try {
             const response = await fetch('/api/reminders/today', {
                 headers: {
@@ -215,42 +511,113 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const payload = await response.json();
             const reminders = Array.isArray(payload.reminders) ? payload.reminders : [];
-            const now = Date.now();
+            todayReminders = reminders;
+            renderNotificationList();
 
-            reminders.forEach((reminder) => {
-                const start = new Date(reminder.remind_at || '').getTime();
-
-                if (!Number.isFinite(start)) {
-                    return;
-                }
-
-                const reminderKey = `${reminder.id}:${reminder.remind_at}`;
-                const minutesUntilStart = Math.floor((start - now) / 60000);
-
-                if (minutesUntilStart < 0 || minutesUntilStart > 5 || shownReminderToasts.has(reminderKey)) {
-                    return;
-                }
-
-                const title = String(reminder.title || '').trim();
-                const message = reminderToastTemplate.replace(':title', title);
-
-                shownReminderToasts.add(reminderKey);
-                showToast(message, 'warning');
-
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    new Notification(message, {
-                        body: String(reminder.note || '').trim(),
-                    });
-                }
-            });
+            if (notify) {
+                processDueReminders(reminders);
+            }
         } catch (error) {
             // Reminder polling should never interrupt the main UI.
         }
     };
 
-    if (toastRegion) {
+    const checkPersonalReminders = async () => {
+        await loadTodayReminders(true);
+    };
+
+    const stopReminderPolling = () => {
+        if (notificationPollIntervalId !== null) {
+            window.clearInterval(notificationPollIntervalId);
+            notificationPollIntervalId = null;
+        }
+    };
+
+    const startReminderPolling = () => {
+        stopReminderPolling();
         checkPersonalReminders();
-        window.setInterval(checkPersonalReminders, 60000);
+        notificationPollIntervalId = window.setInterval(checkPersonalReminders, 60000);
+    };
+
+    const enableNotifications = async () => {
+        const state = notificationPermissionState();
+
+        if (state === 'unsupported') {
+            setNotificationsEnabled(false);
+            updateNotificationToggleUi();
+            updateNotificationStatusNote();
+            stopReminderPolling();
+            showToast(notificationUnsupportedMessage, 'warning');
+            return;
+        }
+
+        if (state !== 'granted') {
+            const permission = await Notification.requestPermission();
+
+            if (permission !== 'granted') {
+                setNotificationsEnabled(false);
+                updateNotificationToggleUi();
+                updateNotificationStatusNote();
+                stopReminderPolling();
+                showToast(toastConfig?.dataset.notificationDenied || '', 'warning');
+                return;
+            }
+        }
+
+        setNotificationsEnabled(true);
+        updateNotificationToggleUi();
+        updateNotificationStatusNote();
+        showToast(toastConfig?.dataset.notificationGranted || '', 'success');
+        startReminderPolling();
+    };
+
+    const disableNotifications = () => {
+        setNotificationsEnabled(false);
+        updateNotificationToggleUi();
+        updateNotificationStatusNote();
+        stopReminderPolling();
+    };
+
+    notificationToggles.forEach((button) => {
+        button.addEventListener('click', () => {
+            if (button.dataset.value === 'on') {
+                enableNotifications();
+                return;
+            }
+
+            disableNotifications();
+        });
+    });
+
+    notificationBellToggle?.addEventListener('click', () => {
+        loadTodayReminders(false);
+    });
+
+    notificationFilterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            notificationFilter = button.dataset.notificationFilter === 'unread' ? 'unread' : 'all';
+
+            notificationFilterButtons.forEach((filterButton) => {
+                filterButton.setAttribute('aria-pressed', filterButton === button ? 'true' : 'false');
+            });
+
+            renderNotificationList();
+        });
+    });
+
+    if (toastRegion) {
+        updateNotificationToggleUi();
+        updateNotificationStatusNote();
+        loadTodayReminders(false);
+
+        if (notificationsEnabled() && notificationPermissionState() === 'granted') {
+            startReminderPolling();
+        } else if (notificationsEnabled()) {
+            setNotificationsEnabled(false);
+            updateNotificationToggleUi();
+            updateNotificationStatusNote();
+            stopReminderPolling();
+        }
     }
 
     const deleteModal = document.querySelector('[data-delete-modal]');
@@ -363,6 +730,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         applyFilters();
     });
+
+    const assistantRefreshRegion = document.querySelector('[data-assistant-refresh]');
+
+    if (assistantRefreshRegion) {
+        window.setInterval(async () => {
+            try {
+                const response = await fetch('/assistant', {
+                    headers: {
+                        Accept: 'text/html',
+                    },
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const html = await response.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const nextRegion = doc.querySelector('[data-assistant-refresh]');
+
+                if (nextRegion) {
+                    assistantRefreshRegion.innerHTML = nextRegion.innerHTML;
+                }
+            } catch (error) {
+                // Assistant refresh is best-effort and should never interrupt the page.
+            }
+        }, 60000);
+    }
 
     document.querySelectorAll('[data-focus-form]').forEach((form) => {
         const timerPanel = document.querySelector('[data-focus-timer]');

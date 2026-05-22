@@ -217,8 +217,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (document.querySelector('.field-error')) {
-        showToast(toastConfig?.dataset.toastValidation || 'Please fix the highlighted fields.', 'danger');
+        showToast(toastConfig?.dataset.toastValidation || '', 'danger');
     }
+
+    const requiredMessage = toastConfig?.dataset.requiredMessage || '';
+
+    document.querySelectorAll('[required]').forEach((field) => {
+        field.addEventListener('invalid', () => {
+            if (field.validity.valueMissing) {
+                field.setCustomValidity(requiredMessage);
+            }
+        });
+
+        field.addEventListener('input', () => {
+            field.setCustomValidity('');
+        });
+
+        field.addEventListener('change', () => {
+            field.setCustomValidity('');
+        });
+    });
 
     const notificationToggles = Array.from(document.querySelectorAll('[data-notification-toggle]'));
     const notificationBellToggle = document.querySelector('[data-notifications-toggle]');
@@ -226,10 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationList = document.querySelector('[data-notifications-list]');
     const notificationStatusNote = document.querySelector('[data-notification-status-note]');
     const notificationFilterButtons = Array.from(document.querySelectorAll('[data-notification-filter]'));
-    const reminderToastTemplate = toastConfig?.dataset.reminderTemplate || 'Coming up: :title';
-    const notificationUnsupportedMessage = toastConfig?.dataset.notificationUnsupported
-        || 'Notifications are not available in this browser.';
-    const notificationDefaultBody = toastConfig?.dataset.notificationDefaultBody || 'It is time for this reminder.';
+    const reminderToastTemplate = toastConfig?.dataset.reminderTemplate || ':title';
+    const notificationUnsupportedMessage = toastConfig?.dataset.notificationUnsupported || '';
+    const notificationDefaultBody = toastConfig?.dataset.notificationDefaultBody || '';
+    const notificationFallbackTitle = toastConfig?.dataset.notificationReminderTitle || '';
+    const notificationGraceMs = 120000;
     const notificationEnabledStorageKey = 'pto-notifications-enabled';
     const notifiedReminderCache = new Map();
     let todayReminders = [];
@@ -371,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showReminderNotification = (reminder) => {
-        const title = String(reminder.title || '').trim() || 'Reminder';
+        const title = String(reminder.title || '').trim() || notificationFallbackTitle;
         const body = String(reminder.note || '').trim() || notificationDefaultBody;
 
         if (!('Notification' in window) || Notification.permission !== 'granted') {
@@ -384,6 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             showReminderFallback(title);
         }
+    };
+
+    const reminderTimestamp = (reminder) => new Date(reminder.remind_at || '').getTime();
+
+    const isReminderStale = (reminder, now = Date.now()) => {
+        const start = reminderTimestamp(reminder);
+
+        return Number.isFinite(start) && now - start > notificationGraceMs;
     };
 
     const formatNotificationTime = (value) => {
@@ -403,8 +430,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderNotificationList = () => {
+        const now = Date.now();
+        const activeReminders = todayReminders.filter((reminder) => !isReminderStale(reminder, now));
+
         if (notificationBadge) {
-            const count = todayReminders.length;
+            const count = activeReminders.filter((reminder) => !hasReminderBeenNotified(reminder)).length;
             notificationBadge.hidden = count === 0;
             notificationBadge.textContent = count > 9 ? '9+' : String(count);
         }
@@ -416,16 +446,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const reminders = notificationFilter === 'unread'
-            ? todayReminders.filter((reminder) => !hasReminderBeenNotified(reminder))
-            : todayReminders;
+            ? activeReminders.filter((reminder) => !hasReminderBeenNotified(reminder))
+            : todayReminders.slice();
 
         if (reminders.length === 0) {
             notificationList.innerHTML = '';
             const empty = document.createElement('p');
             empty.className = 'empty-state';
             empty.textContent = notificationFilter === 'unread'
-                ? (toastConfig?.dataset.notificationUnreadEmpty || toastConfig?.dataset.notificationEmpty || 'No unread reminders.')
-                : (toastConfig?.dataset.notificationAllEmpty || toastConfig?.dataset.notificationEmpty || 'No reminders for today.');
+                ? (toastConfig?.dataset.notificationUnreadEmpty || toastConfig?.dataset.notificationEmpty || '')
+                : (toastConfig?.dataset.notificationAllEmpty || toastConfig?.dataset.notificationEmpty || '');
             notificationList.appendChild(empty);
             return;
         }
@@ -434,20 +464,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reminders
             .slice()
-            .sort((a, b) => new Date(a.remind_at || '').getTime() - new Date(b.remind_at || '').getTime())
+            .sort((a, b) => {
+                const aStale = isReminderStale(a, now) ? 1 : 0;
+                const bStale = isReminderStale(b, now) ? 1 : 0;
+
+                if (aStale !== bStale) {
+                    return aStale - bStale;
+                }
+
+                return reminderTimestamp(a) - reminderTimestamp(b);
+            })
             .forEach((reminder) => {
                 const item = document.createElement('article');
-                item.className = `notification-item${hasReminderBeenNotified(reminder) ? '' : ' unread'}`;
+                const stale = isReminderStale(reminder, now);
+                item.className = `notification-item${!stale && !hasReminderBeenNotified(reminder) ? ' unread' : ''}${stale ? ' past' : ''}`;
 
                 const head = document.createElement('div');
                 head.className = 'notification-item-head';
 
                 const title = document.createElement('strong');
-                title.textContent = String(reminder.title || '').trim() || 'Reminder';
+                title.textContent = String(reminder.title || '').trim() || notificationFallbackTitle;
 
                 const time = document.createElement('span');
                 time.className = 'notification-time';
-                time.textContent = formatNotificationTime(reminder.remind_at);
+                time.textContent = `${formatNotificationTime(reminder.remind_at)} · ${stale ? (toastConfig?.dataset.notificationPastLabel || '') : (toastConfig?.dataset.notificationUpcomingLabel || '')}`;
 
                 head.append(title, time);
                 item.appendChild(head);
@@ -480,13 +520,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = Date.now();
 
         reminders.forEach((reminder) => {
-            const start = new Date(reminder.remind_at || '').getTime();
+            const start = reminderTimestamp(reminder);
 
             if (!Number.isFinite(start)) {
                 return;
             }
 
-            if (start > now || hasReminderBeenNotified(reminder)) {
+            const diffMs = now - start;
+            const isDueNow = diffMs >= 0 && diffMs <= notificationGraceMs;
+
+            if (!isDueNow || hasReminderBeenNotified(reminder)) {
                 return;
             }
 
@@ -619,6 +662,66 @@ document.addEventListener('DOMContentLoaded', () => {
             stopReminderPolling();
         }
     }
+
+    document.querySelectorAll('.timetable-item[data-reminder-item]').forEach((item) => {
+        const actions = item.querySelector('.actions');
+        const scheduleId = item.dataset.reminderId;
+
+        if (!actions || !scheduleId || actions.querySelector('[data-timetable-delete]')) {
+            return;
+        }
+
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = `/timetable/schedules/${encodeURIComponent(scheduleId)}`;
+        form.dataset.timetableDelete = 'true';
+
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+
+        const dateInput = document.createElement('input');
+        dateInput.type = 'hidden';
+        dateInput.name = 'date';
+        dateInput.value = document.querySelector('input[name="date"]')?.value || '';
+
+        const button = document.createElement('button');
+        button.className = 'button compact danger';
+        button.type = 'submit';
+        button.textContent = toastConfig?.dataset.deleteLabel || '';
+
+        form.addEventListener('submit', (event) => {
+            const message = toastConfig?.dataset.deleteScheduleMessage || '';
+
+            if (message !== '' && !window.confirm(message)) {
+                event.preventDefault();
+            }
+        });
+
+        form.append(methodInput, dateInput, button);
+        actions.appendChild(form);
+    });
+
+    document.querySelectorAll('[data-reminder-repeat]').forEach((select) => {
+        const form = select.closest('form');
+        const weeklyField = form?.querySelector('[data-reminder-weekly]');
+        const intervalFields = form?.querySelector('[data-reminder-interval]');
+        const updateReminderRepeatFields = () => {
+            const repeatType = select.value;
+
+            if (weeklyField) {
+                weeklyField.hidden = repeatType !== 'weekly';
+            }
+
+            if (intervalFields) {
+                intervalFields.hidden = repeatType !== 'interval';
+            }
+        };
+
+        select.addEventListener('change', updateReminderRepeatFields);
+        updateReminderRepeatFields();
+    });
 
     const deleteModal = document.querySelector('[data-delete-modal]');
     const deleteModalMessage = document.querySelector('[data-delete-modal-message]');

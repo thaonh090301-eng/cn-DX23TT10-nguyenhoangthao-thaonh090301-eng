@@ -11,6 +11,7 @@ use DateTimeImmutable;
 class ReminderController extends Controller
 {
     private const DEMO_USER_ID = 1;
+    private const REPEAT_TYPES = ['none', 'daily', 'weekly', 'interval'];
 
     private ReminderRepository $reminders;
 
@@ -121,10 +122,12 @@ class ReminderController extends Controller
         $today = date('Y-m-d');
         $reminders = array_map(static function (array $reminder) use ($today): array {
             return [
-                'id' => (int) $reminder['id'],
+                'id' => $reminder['occurrence_id'] ?? (string) $reminder['id'],
+                'reminder_id' => (int) $reminder['id'],
                 'title' => $reminder['title'],
                 'note' => $reminder['note'],
                 'remind_at' => $today . 'T' . substr((string) $reminder['remind_time'], 0, 8),
+                'repeat_type' => $reminder['repeat_type'],
             ];
         }, $this->reminders->activeForDate($this->authUserId(), $today));
 
@@ -134,11 +137,16 @@ class ReminderController extends Controller
     private function reminderDataFromRequest(): array
     {
         $repeatType = trim((string) ($_POST['repeat_type'] ?? 'daily'));
-        $repeatType = in_array($repeatType, ['none', 'daily', 'weekly'], true) ? $repeatType : 'daily';
+        $repeatType = in_array($repeatType, self::REPEAT_TYPES, true) ? $repeatType : 'daily';
         $dayOfWeek = ($_POST['day_of_week'] ?? '') === '' ? null : (int) $_POST['day_of_week'];
+        $intervalMinutes = $this->intervalMinutesFromRequest();
 
         if ($repeatType !== 'weekly') {
             $dayOfWeek = null;
+        }
+
+        if ($repeatType !== 'interval') {
+            $intervalMinutes = null;
         }
 
         return [
@@ -147,6 +155,9 @@ class ReminderController extends Controller
             'remind_time' => $this->normalizeTime((string) ($_POST['remind_time'] ?? '')),
             'repeat_type' => $repeatType,
             'day_of_week' => $dayOfWeek,
+            'interval_minutes' => $intervalMinutes,
+            'interval_hours' => max(0, (int) ($_POST['interval_hours'] ?? 0)),
+            'interval_remainder_minutes' => max(0, (int) ($_POST['interval_minutes'] ?? 0)),
             'is_active' => isset($_POST['is_active']) ? 1 : 0,
         ];
     }
@@ -167,7 +178,19 @@ class ReminderController extends Controller
             $errors['day_of_week'] = __('validation.valid_day_of_week');
         }
 
+        if ($data['repeat_type'] === 'interval' && (int) ($data['interval_minutes'] ?? 0) <= 0) {
+            $errors['interval_minutes'] = __('validation.valid_interval_minutes');
+        }
+
         return $errors;
+    }
+
+    private function intervalMinutesFromRequest(): int
+    {
+        $hours = max(0, (int) ($_POST['interval_hours'] ?? 0));
+        $minutes = max(0, (int) ($_POST['interval_minutes'] ?? 0));
+
+        return ($hours * 60) + $minutes;
     }
 
     private function normalizeTime(string $value): ?string
@@ -190,6 +213,9 @@ class ReminderController extends Controller
             'remind_time' => '09:00:00',
             'repeat_type' => 'daily',
             'day_of_week' => null,
+            'interval_minutes' => null,
+            'interval_hours' => 0,
+            'interval_remainder_minutes' => 0,
             'is_active' => 1,
         ];
     }

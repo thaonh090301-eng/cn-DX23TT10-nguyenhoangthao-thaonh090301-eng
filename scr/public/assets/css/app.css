@@ -703,6 +703,10 @@ p {
     background: var(--accent-soft);
 }
 
+.notification-item.past {
+    opacity: 0.68;
+}
+
 .notification-item-head {
     display: flex;
     align-items: baseline;

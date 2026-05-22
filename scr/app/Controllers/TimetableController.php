@@ -81,6 +81,22 @@ class TimetableController extends Controller
         return $this->redirect('/timetable?date=' . urlencode($date));
     }
 
+    public function destroySchedule(string $id): string
+    {
+        $date = $this->dateFromValue((string) ($_POST['date'] ?? $_GET['date'] ?? ''));
+        $schedule = $this->scheduleRepository->findByUser((int) $id, $this->authUserId());
+
+        if ($schedule === null) {
+            http_response_code(404);
+            exit(__('not_found.schedule'));
+        }
+
+        $this->scheduleRepository->delete((int) $id, $this->authUserId());
+        $this->flash('success', __('flash.schedule_deleted'));
+
+        return $this->redirect('/timetable?date=' . urlencode($date));
+    }
+
     private function scheduleDataFromRequest(): array
     {
         $date = $this->dateFromValue((string) ($_POST['date'] ?? ''));

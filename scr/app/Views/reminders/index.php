@@ -43,7 +43,7 @@
                             <h2><?= $e($reminder['title']) ?></h2>
                             <p><?= $e($reminder['note'] ?? '') ?></p>
                             <p class="help-text">
-                                <?= $e(__('reminder.repeat.' . $reminder['repeat_type'])) ?>
+                                <?= $e($reminder['repeat_type'] === 'interval' ? format_reminder_interval((int) ($reminder['interval_minutes'] ?? 0)) : __('reminder.repeat.' . $reminder['repeat_type'])) ?>
                                 <?php if ($reminder['repeat_type'] === 'weekly' && $reminder['day_of_week'] !== null): ?>
                                     &middot; <?= $e(__('day.' . $reminder['day_of_week'])) ?>
                                 <?php endif; ?>

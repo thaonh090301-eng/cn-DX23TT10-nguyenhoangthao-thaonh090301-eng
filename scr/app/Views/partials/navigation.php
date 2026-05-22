@@ -323,8 +323,14 @@ $currentLocale = Lang::locale();
     data-notification-empty="<?= $e(__('notifications.empty')) ?>"
     data-notification-all-empty="<?= $e(__('notifications.empty')) ?>"
     data-notification-unread-empty="<?= $e(__('notifications.unread_empty')) ?>"
+    data-notification-upcoming-label="<?= $e(__('notifications.upcoming')) ?>"
+    data-notification-past-label="<?= $e(__('notifications.past')) ?>"
+    data-notification-reminder-title="<?= $e(__('notifications.reminder_title')) ?>"
     data-notification-on-label="<?= $e(__('notifications.on')) ?>"
     data-notification-off-label="<?= $e(__('notifications.off')) ?>"
+    data-required-message="<?= $e(__('validation.required_field')) ?>"
+    data-delete-label="<?= $e(__('action.delete')) ?>"
+    data-delete-schedule-message="<?= $e(__('message.delete_schedule')) ?>"
     hidden
 ></div>
 <div class="toast-region" data-toast-region aria-live="polite" aria-atomic="false"></div>

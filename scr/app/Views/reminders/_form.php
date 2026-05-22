@@ -1,6 +1,14 @@
 <?php
 $timeValue = static fn (mixed $value): string => substr((string) $value, 0, 5);
 $isActive = (int) ($reminder['is_active'] ?? 1) === 1;
+$repeatValue = (string) ($reminder['repeat_type'] ?? 'daily');
+$totalIntervalMinutes = (int) ($reminder['interval_minutes'] ?? 0);
+$intervalHours = array_key_exists('interval_hours', $reminder)
+    ? (int) $reminder['interval_hours']
+    : intdiv($totalIntervalMinutes, 60);
+$intervalMinutes = array_key_exists('interval_remainder_minutes', $reminder)
+    ? (int) $reminder['interval_remainder_minutes']
+    : ($totalIntervalMinutes % 60);
 ?>
 <label>
     <span><?= $e(__('label.title')) ?></span>
@@ -26,9 +34,9 @@ $isActive = (int) ($reminder['is_active'] ?? 1) === 1;
 
     <label>
         <span><?= $e(__('reminder.repeat_type')) ?></span>
-        <select name="repeat_type">
-            <?php foreach (['none', 'daily', 'weekly'] as $repeatType): ?>
-                <option value="<?= $e($repeatType) ?>" <?= ($reminder['repeat_type'] ?? 'daily') === $repeatType ? 'selected' : '' ?>>
+        <select name="repeat_type" data-reminder-repeat>
+            <?php foreach (['none', 'daily', 'weekly', 'interval'] as $repeatType): ?>
+                <option value="<?= $e($repeatType) ?>" <?= $repeatValue === $repeatType ? 'selected' : '' ?>>
                     <?= $e(__('reminder.repeat.' . $repeatType)) ?>
                 </option>
             <?php endforeach; ?>
@@ -36,7 +44,7 @@ $isActive = (int) ($reminder['is_active'] ?? 1) === 1;
     </label>
 </div>
 
-<label>
+<label data-reminder-weekly <?= $repeatValue === 'weekly' ? '' : 'hidden' ?>>
     <span><?= $e(__('reminder.day_of_week')) ?></span>
     <select name="day_of_week">
         <option value=""><?= $e(__('reminder.day_optional')) ?></option>
@@ -50,6 +58,20 @@ $isActive = (int) ($reminder['is_active'] ?? 1) === 1;
         <small class="field-error"><?= $e($errors['day_of_week']) ?></small>
     <?php endif; ?>
 </label>
+
+<div class="form-grid" data-reminder-interval <?= $repeatValue === 'interval' ? '' : 'hidden' ?>>
+    <label>
+        <span><?= $e(__('reminder.interval_hours')) ?></span>
+        <input type="number" name="interval_hours" value="<?= $e($intervalHours) ?>" min="0" max="23" step="1">
+    </label>
+    <label>
+        <span><?= $e(__('reminder.interval_minutes')) ?></span>
+        <input type="number" name="interval_minutes" value="<?= $e($intervalMinutes) ?>" min="0" max="59" step="1">
+    </label>
+    <?php if (!empty($errors['interval_minutes'])): ?>
+        <small class="field-error"><?= $e($errors['interval_minutes']) ?></small>
+    <?php endif; ?>
+</div>
 
 <label class="checkbox-row">
     <input type="checkbox" name="is_active" value="1" <?= $isActive ? 'checked' : '' ?>>

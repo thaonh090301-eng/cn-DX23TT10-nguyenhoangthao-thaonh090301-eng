@@ -98,6 +98,31 @@ if (!function_exists('format_duration_minutes')) {
     }
 }
 
+if (!function_exists('format_reminder_interval')) {
+    function format_reminder_interval(int $minutes): string
+    {
+        if ($minutes <= 0) {
+            return '';
+        }
+
+        $hours = intdiv($minutes, 60);
+        $remainingMinutes = $minutes % 60;
+
+        if ($hours > 0 && $remainingMinutes > 0) {
+            return __('reminder.interval_hours_minutes', [
+                'hours' => $hours,
+                'minutes' => $remainingMinutes,
+            ]);
+        }
+
+        if ($hours > 0) {
+            return __('reminder.interval_hours_only', ['hours' => $hours]);
+        }
+
+        return __('reminder.interval_minutes_only', ['minutes' => $remainingMinutes]);
+    }
+}
+
 if (!function_exists('display_note')) {
     function display_note(mixed $note): string
     {

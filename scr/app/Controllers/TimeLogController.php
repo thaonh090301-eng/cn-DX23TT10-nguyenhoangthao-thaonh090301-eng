@@ -31,6 +31,14 @@ class TimeLogController extends Controller
         ]);
     }
 
+    public function reset(): string
+    {
+        $this->timeLogs->deleteAllByUser($this->authUserId());
+        $this->flash('success', \__('flash.time_log_reset'));
+
+        return $this->redirect('/time-logs');
+    }
+
     private function dateFromRequest(): string
     {
         $date = trim((string) ($_GET['date'] ?? date('Y-m-d')));

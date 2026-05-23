@@ -1279,6 +1279,10 @@ p {
     gap: var(--dashboard-gap);
 }
 
+.header-actions form {
+    display: flex;
+}
+
 .panel {
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -2990,6 +2994,10 @@ button.compact {
     }
 
     .header-actions .button {
+        width: 100%;
+    }
+
+    .header-actions form {
         width: 100%;
     }
 

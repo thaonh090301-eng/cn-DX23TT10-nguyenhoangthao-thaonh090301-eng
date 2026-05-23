@@ -139,16 +139,6 @@ class ActivityController extends Controller
             ]);
         }
 
-        if ((int) $activity['time_logs_count'] > 0) {
-            http_response_code(422);
-
-            return $this->view('activities/delete', [
-                'title' => 'Delete Activity',
-                'activity' => $activity,
-                'errors' => ['activity' => \__('validation.activity_delete_time_logs')],
-            ]);
-        }
-
         $this->activities->delete((int) $id, $this->authUserId());
         $this->flash('success', \__('flash.activity_deleted'));
 

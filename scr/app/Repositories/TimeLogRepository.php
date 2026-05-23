@@ -24,8 +24,8 @@ class TimeLogRepository
                     c.name AS category_name,
                     c.color AS category_color
              FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
-             INNER JOIN categories c ON c.id = a.category_id
+             LEFT JOIN activities a ON a.id = tl.activity_id AND a.user_id = tl.user_id
+             LEFT JOIN categories c ON c.id = a.category_id AND c.user_id = tl.user_id
              WHERE tl.user_id = :user_id
              ORDER BY tl.started_at DESC, tl.ended_at DESC'
         );
@@ -60,8 +60,8 @@ class TimeLogRepository
                     c.name AS category_name,
                     c.color AS category_color
              FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
-             INNER JOIN categories c ON c.id = a.category_id
+             LEFT JOIN activities a ON a.id = tl.activity_id AND a.user_id = tl.user_id
+             LEFT JOIN categories c ON c.id = a.category_id AND c.user_id = tl.user_id
              WHERE tl.id = :id AND tl.user_id = :user_id
              LIMIT 1'
         );
@@ -133,6 +133,16 @@ class TimeLogRepository
         return $statement->rowCount() > 0;
     }
 
+    public function deleteAllByUser(int $userId): int
+    {
+        $statement = $this->db->prepare(
+            'DELETE FROM time_logs WHERE user_id = :user_id'
+        );
+        $statement->execute(['user_id' => $userId]);
+
+        return $statement->rowCount();
+    }
+
     private function scheduledReportRows(int $userId, string $startAt, string $endAt): array
     {
         $statement = $this->db->prepare(
@@ -150,11 +160,9 @@ class TimeLogRepository
                     :row_type AS row_type,
                     s.start_at AS sort_at
              FROM schedules s
-             INNER JOIN activities a ON a.id = s.activity_id
-             INNER JOIN categories c ON c.id = a.category_id
+             LEFT JOIN activities a ON a.id = s.activity_id AND a.user_id = :activity_user_id
+             LEFT JOIN categories c ON c.id = a.category_id AND c.user_id = :category_user_id
              WHERE s.user_id = :schedule_user_id
-                AND a.user_id = :activity_user_id
-                AND c.user_id = :category_user_id
                 AND s.start_at >= :start_at
                 AND s.start_at < :end_at
                 AND s.status <> :cancelled_status
@@ -190,11 +198,9 @@ class TimeLogRepository
                     :row_type AS row_type,
                     tl.started_at AS sort_at
              FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
-             INNER JOIN categories c ON c.id = a.category_id
+             LEFT JOIN activities a ON a.id = tl.activity_id AND a.user_id = :activity_user_id
+             LEFT JOIN categories c ON c.id = a.category_id AND c.user_id = :category_user_id
              WHERE tl.user_id = :log_user_id
-                AND a.user_id = :activity_user_id
-                AND c.user_id = :category_user_id
                 AND tl.schedule_id IS NULL
                 AND tl.started_at >= :start_at
                 AND tl.started_at < :end_at

@@ -106,14 +106,35 @@ class ActivityRepository
 
     public function delete(int $id, int $userId): bool
     {
-        $statement = $this->db->prepare(
-            'DELETE FROM activities WHERE id = :id AND user_id = :user_id'
-        );
-        $statement->execute([
-            'id' => $id,
-            'user_id' => $userId,
-        ]);
+        $this->db->beginTransaction();
 
-        return $statement->rowCount() > 0;
+        try {
+            $detachTimeLogs = $this->db->prepare(
+                'UPDATE time_logs
+                 SET activity_id = NULL
+                 WHERE activity_id = :id AND user_id = :user_id'
+            );
+            $detachTimeLogs->execute([
+                'id' => $id,
+                'user_id' => $userId,
+            ]);
+
+            $statement = $this->db->prepare(
+                'DELETE FROM activities WHERE id = :id AND user_id = :user_id'
+            );
+            $statement->execute([
+                'id' => $id,
+                'user_id' => $userId,
+            ]);
+
+            $deleted = $statement->rowCount() > 0;
+            $this->db->commit();
+
+            return $deleted;
+        } catch (\Throwable $exception) {
+            $this->db->rollBack();
+
+            throw $exception;
+        }
     }
 }

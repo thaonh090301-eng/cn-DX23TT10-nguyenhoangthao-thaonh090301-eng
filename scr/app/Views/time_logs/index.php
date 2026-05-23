@@ -27,6 +27,9 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
                 <h1><?= $e(__('time_report.title')) ?></h1>
             </div>
             <div class="header-actions">
+                <form method="post" action="/time-logs/reset" onsubmit="return window.confirm(<?= $e(json_encode(__('time_report.reset_confirm'), JSON_UNESCAPED_UNICODE) ?: '""') ?>)">
+                    <button class="button danger" type="submit"><?= $e(__('time_report.action.reset')) ?></button>
+                </form>
                 <button class="button primary" type="button" onclick="window.print()"><?= $e(__('time_report.action.print')) ?></button>
             </div>
         </section>
@@ -81,14 +84,21 @@ $formatMinutes = static fn (mixed $value): string => $value === null ? __('time_
                         <tbody>
                             <?php foreach ($reportRows as $row): ?>
                                 <?php
-                                    $activityTitle = display_activity_title($row['activity_title']);
-                                    $categoryName = display_category_name($row['category_name']);
+                                    $activityTitle = trim((string) ($row['activity_title'] ?? '')) !== ''
+                                        ? display_activity_title($row['activity_title'])
+                                        : __('time_report.deleted_activity');
+                                    $categoryName = trim((string) ($row['category_name'] ?? '')) !== ''
+                                        ? display_category_name($row['category_name'])
+                                        : __('time_report.no_category');
+                                    $categoryColor = trim((string) ($row['category_color'] ?? '')) !== ''
+                                        ? (string) $row['category_color']
+                                        : '#9ca3af';
                                     $note = display_note($row['report_note'] ?? '');
                                 ?>
                                 <tr>
                                     <td><?= $e($activityTitle) ?></td>
                                     <td>
-                                        <span class="color-chip" style="--chip: <?= $e($row['category_color']) ?>"></span>
+                                        <span class="color-chip" style="--chip: <?= $e($categoryColor) ?>"></span>
                                         <?= $e($categoryName) ?>
                                     </td>
                                     <td><?= $e($formatTime($row['planned_start_at'])) ?></td>

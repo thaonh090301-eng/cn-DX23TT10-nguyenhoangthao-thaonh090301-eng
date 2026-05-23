@@ -85,3 +85,4 @@ $router->get('/important-dates/{id}/delete', [ImportantDateController::class, 'd
 $router->delete('/important-dates/{id}', [ImportantDateController::class, 'destroy']);
 
 $router->get('/time-logs', [TimeLogController::class, 'index']);
+$router->post('/time-logs/reset', [TimeLogController::class, 'reset']);

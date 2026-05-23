@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./scr/public/assets/images/logos/logo-light.png" alt="URTISYNC Logo" width="220">
+  <img src="./scr/public/assets/images/logos/logo-dark.png" alt="URTISYNC Logo" width="220">
 </p>
 
 <h1 align="center">URTISYNC</h1>

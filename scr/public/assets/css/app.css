@@ -701,6 +701,27 @@ p {
     padding: var(--sidebar-padding) var(--nav-x) 4px;
 }
 
+.student-submission-info {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: var(--meta-font-size);
+    line-height: 1.45;
+}
+
+.student-submission-info strong {
+    color: var(--text);
+    font-size: var(--meta-font-size);
+    font-weight: 750;
+}
+
+.student-submission-info small {
+    color: var(--muted);
+    font-size: calc(var(--meta-font-size) - 1px);
+    line-height: 1.45;
+}
+
 .workspace-topbar {
     grid-column: 2;
     width: 100%;
@@ -2925,7 +2946,11 @@ button.compact {
     }
 
     .workspace-sidebar-footer {
-        display: none;
+        align-self: auto;
+        display: grid;
+        width: 100%;
+        margin-top: 2px;
+        padding: calc(var(--sidebar-padding) * 0.75) var(--nav-x) 0;
     }
 
     .workspace-brand-row {
@@ -3103,7 +3128,11 @@ button.compact {
     }
 
     .workspace-sidebar-footer {
-        display: none;
+        align-self: auto;
+        display: grid;
+        width: 100%;
+        margin-top: 4px;
+        padding: calc(var(--sidebar-padding) * 0.85) var(--nav-x) 0;
     }
 
     .workspace-nav {

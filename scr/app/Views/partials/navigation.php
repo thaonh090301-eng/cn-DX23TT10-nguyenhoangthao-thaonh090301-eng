@@ -230,6 +230,10 @@ $currentLocale = Lang::locale();
 
     <div class="workspace-sidebar-footer">
         <span><?= $e(__('ui.focus_planning')) ?></span>
+        <div class="student-submission-info">
+            <strong>Nguyễn Hoàng Thảo · DX23TT10</strong>
+            <small>Đề tài: Xây dựng hệ thống tối ưu hóa quản lý thời gian cá nhân</small>
+        </div>
     </div>
 </aside>
 

@@ -130,10 +130,27 @@ $currentLocale = Lang::locale();
 <aside class="workspace-sidebar">
     <div class="workspace-brand-row">
         <a class="workspace-brand" href="/">
-            <span class="workspace-mark">PTO</span>
-            <span>
-                <strong><?= $e(__('app.sidebar_title')) ?></strong>
-                <small><?= $e(__('app.sidebar_subtitle')) ?></small>
+            <span class="workspace-logo">
+                <img
+                    class="workspace-logo-img workspace-logo-light"
+                    src="/assets/images/logos/logo-light.png"
+                    alt="<?= $e(__('app.sidebar_title')) ?>"
+                    onerror="this.hidden=true"
+                >
+                <span class="workspace-logo-fallback workspace-logo-fallback-light">
+                    <strong><?= $e(__('app.sidebar_title')) ?></strong>
+                    <small><?= $e(__('app.sidebar_subtitle')) ?></small>
+                </span>
+                <img
+                    class="workspace-logo-img workspace-logo-dark"
+                    src="/assets/images/logos/logo-dark.png"
+                    alt="<?= $e(__('app.sidebar_title')) ?>"
+                    onerror="this.hidden=true"
+                >
+                <span class="workspace-logo-fallback workspace-logo-fallback-dark">
+                    <strong><?= $e(__('app.sidebar_title')) ?></strong>
+                    <small><?= $e(__('app.sidebar_subtitle')) ?></small>
+                </span>
             </span>
         </a>
         <div class="settings-menu">

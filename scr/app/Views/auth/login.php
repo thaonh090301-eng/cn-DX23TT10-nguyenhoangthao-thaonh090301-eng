@@ -11,6 +11,28 @@
     <main class="login-shell">
         <section class="login-panel">
             <?php $currentLocale = \App\Core\Lang::locale(); ?>
+            <div class="login-logo" aria-label="<?= $e(__('app.sidebar_title')) ?>">
+                <img
+                    class="login-logo-img login-logo-light"
+                    src="/assets/images/logos/login-logo-light.png"
+                    alt="<?= $e(__('app.sidebar_title')) ?>"
+                    onerror="this.hidden=true"
+                >
+                <span class="login-logo-fallback login-logo-fallback-light">
+                    <strong><?= $e(__('app.sidebar_title')) ?></strong>
+                    <small><?= $e(__('app.sidebar_subtitle')) ?></small>
+                </span>
+                <img
+                    class="login-logo-img login-logo-dark"
+                    src="/assets/images/logos/login-logo-dark.png"
+                    alt="<?= $e(__('app.sidebar_title')) ?>"
+                    onerror="this.hidden=true"
+                >
+                <span class="login-logo-fallback login-logo-fallback-dark">
+                    <strong><?= $e(__('app.sidebar_title')) ?></strong>
+                    <small><?= $e(__('app.sidebar_subtitle')) ?></small>
+                </span>
+            </div>
             <div class="login-panel-header">
                 <div>
                     <p class="eyebrow"><?= $e(__('auth.demo_eyebrow')) ?></p>

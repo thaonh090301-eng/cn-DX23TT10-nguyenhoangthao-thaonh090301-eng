@@ -38,9 +38,7 @@ class TimeLogRepository
     {
         $startAt = $date . ' 00:00:00';
         $endAt = date('Y-m-d H:i:s', strtotime($startAt . ' +1 day'));
-        $scheduledRows = $this->scheduledReportRows($userId, $startAt, $endAt);
-        $unscheduledRows = $this->unscheduledReportRows($userId, $startAt, $endAt);
-        $rows = array_merge($scheduledRows, $unscheduledRows);
+        $rows = $this->scheduledReportRows($userId, $startAt, $endAt);
 
         usort($rows, static function (array $a, array $b): int {
             $aStart = $a['sort_at'] ?? $a['planned_start_at'] ?? '';
@@ -176,43 +174,6 @@ class TimeLogRepository
             'start_at' => $startAt,
             'end_at' => $endAt,
             'cancelled_status' => 'cancelled',
-        ]);
-
-        return $statement->fetchAll();
-    }
-
-    private function unscheduledReportRows(int $userId, string $startAt, string $endAt): array
-    {
-        $statement = $this->db->prepare(
-            'SELECT
-                    NULL AS schedule_id,
-                    tl.activity_id,
-                    NULL AS schedule_title,
-                    NULL AS planned_start_at,
-                    NULL AS planned_end_at,
-                    NULL AS planned_minutes,
-                    tl.note AS report_note,
-                    a.title AS activity_title,
-                    c.name AS category_name,
-                    c.color AS category_color,
-                    :row_type AS row_type,
-                    tl.started_at AS sort_at
-             FROM time_logs tl
-             LEFT JOIN activities a ON a.id = tl.activity_id AND a.user_id = :activity_user_id
-             LEFT JOIN categories c ON c.id = a.category_id AND c.user_id = :category_user_id
-             WHERE tl.user_id = :log_user_id
-                AND tl.schedule_id IS NULL
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
-             ORDER BY tl.started_at ASC, tl.ended_at ASC'
-        );
-        $statement->execute([
-            'row_type' => 'unscheduled',
-            'log_user_id' => $userId,
-            'activity_user_id' => $userId,
-            'category_user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
         ]);
 
         return $statement->fetchAll();

@@ -30,16 +30,14 @@ class SmartAssistantService
         $week = $this->weekRange();
         $summary = [
             'planned_today_minutes' => $this->plannedMinutes($userId, $today['start'], $today['end']),
-            'actual_today_minutes' => $this->actualMinutes($userId, $today['start'], $today['end']),
-            'time_logs_today_count' => $this->timeLogsCount($userId, $today['start'], $today['end']),
             'schedules_today_count' => $this->schedulesCount($userId, $today['start'], $today['end']),
-            'actual_week_minutes' => $this->actualMinutes($userId, $week['start'], $week['end']),
             'planned_week_minutes' => $this->plannedMinutes($userId, $week['start'], $week['end']),
         ];
-        $personalMinutes = $this->personalOrRecreationActualMinutes($userId, $today['start'], $today['end']);
+        $summary['schedule_today_minutes'] = $summary['planned_today_minutes'];
+        $summary['schedule_week_minutes'] = $summary['planned_week_minutes'];
+        $personalMinutes = $this->personalOrRecreationScheduleMinutes($userId, $today['start'], $today['end']);
         $personalThreshold = $this->personalThresholdMinutes();
-        $longestTimeLog = $this->longestTimeLog($userId, $today['start'], $today['end']);
-        $endedUnconfirmed = $this->endedUnconfirmedSchedules($userId);
+        $longestSchedule = $this->longestSchedule($userId, $today['start'], $today['end']);
         $dominantCategory = $this->dominantCategoryThisWeek($userId, $week['start'], $week['end']);
         $freeGaps = $this->freeGapsToday($userId);
         $longGap = $this->longestGap($freeGaps);
@@ -50,35 +48,35 @@ class SmartAssistantService
         $upcomingImportantDates = $importantDateRepository->upcomingWithinDays($userId, 7, 3);
         $softPlanningDate = $this->firstSoftPlanningImportantDate($upcomingImportantDates);
         $suggestions = [];
-        $overPlannedMinutes = $summary['actual_today_minutes'] - $summary['planned_today_minutes'];
+        $overPlannedMinutes = $summary['schedule_today_minutes'] - $summary['planned_today_minutes'];
 
-        if ($summary['actual_today_minutes'] > 1440) {
+        if ($summary['schedule_today_minutes'] > 1440) {
             $suggestions[] = [
                 'title' => __('assistant.rule.day_over_24h.title'),
                 'explanation' => __('assistant.rule.day_over_24h.explanation', [
-                    'actual' => $summary['actual_today_minutes'],
+                    'minutes' => $summary['schedule_today_minutes'],
                 ]),
                 'recommendation' => __('assistant.rule.day_over_24h.recommendation'),
                 'severity' => 'alarm',
             ];
         }
 
-        if ($longestTimeLog !== null && $longestTimeLog['duration_minutes'] > 720) {
+        if ($longestSchedule !== null && $longestSchedule['duration_minutes'] > 720) {
             $suggestions[] = [
                 'title' => __('assistant.rule.long_log_alarm.title'),
                 'explanation' => __('assistant.rule.long_log_alarm.explanation', [
-                    'activity' => \display_activity_title($longestTimeLog['activity_title'] ?? ''),
-                    'minutes' => $longestTimeLog['duration_minutes'],
+                    'activity' => \display_activity_title($longestSchedule['activity_title'] ?? ''),
+                    'minutes' => $longestSchedule['duration_minutes'],
                 ]),
                 'recommendation' => __('assistant.rule.long_log_alarm.recommendation'),
                 'severity' => 'alarm',
             ];
-        } elseif ($longestTimeLog !== null && $longestTimeLog['duration_minutes'] >= 240) {
+        } elseif ($longestSchedule !== null && $longestSchedule['duration_minutes'] >= 240) {
             $suggestions[] = [
                 'title' => __('assistant.rule.long_log_warning.title'),
                 'explanation' => __('assistant.rule.long_log_warning.explanation', [
-                    'activity' => \display_activity_title($longestTimeLog['activity_title'] ?? ''),
-                    'minutes' => $longestTimeLog['duration_minutes'],
+                    'activity' => \display_activity_title($longestSchedule['activity_title'] ?? ''),
+                    'minutes' => $longestSchedule['duration_minutes'],
                 ]),
                 'recommendation' => __('assistant.rule.long_log_warning.recommendation'),
                 'severity' => 'warning',
@@ -89,7 +87,7 @@ class SmartAssistantService
             $suggestions[] = [
                 'title' => __('assistant.rule.overload_alarm.title'),
                 'explanation' => __('assistant.rule.overload_alarm.explanation', [
-                    'actual' => $summary['actual_today_minutes'],
+                    'minutes' => $summary['schedule_today_minutes'],
                     'planned' => $summary['planned_today_minutes'],
                     'over' => $overPlannedMinutes,
                 ]),
@@ -100,7 +98,7 @@ class SmartAssistantService
             $suggestions[] = [
                 'title' => __('assistant.rule.overload.title'),
                 'explanation' => __('assistant.rule.overload.explanation', [
-                    'actual' => $summary['actual_today_minutes'],
+                    'minutes' => $summary['schedule_today_minutes'],
                     'planned' => $summary['planned_today_minutes'],
                     'over' => $overPlannedMinutes,
                 ]),
@@ -131,53 +129,11 @@ class SmartAssistantService
             ];
         }
 
-        if ($summary['schedules_today_count'] > 0 && $summary['time_logs_today_count'] === 0) {
-            $suggestions[] = [
-                'title' => __('assistant.rule.schedules_without_logs.title'),
-                'explanation' => __('assistant.rule.schedules_without_logs.explanation', [
-                    'count' => $summary['schedules_today_count'],
-                ]),
-                'recommendation' => __('assistant.rule.schedules_without_logs.recommendation'),
-                'severity' => 'warning',
-            ];
-        } elseif ($summary['time_logs_today_count'] === 0) {
-            $suggestions[] = [
-                'title' => __('assistant.rule.no_logs.title'),
-                'explanation' => __('assistant.rule.no_logs.explanation'),
-                'recommendation' => __('assistant.rule.no_logs.recommendation'),
-                'severity' => 'warning',
-            ];
-        }
-
-        if ($endedUnconfirmed !== null) {
-            $suggestions[] = [
-                'title' => __('assistant.rule.ended_unconfirmed.title'),
-                'explanation' => __('assistant.rule.ended_unconfirmed.explanation', [
-                    'activity' => \display_activity_title($endedUnconfirmed['activity_title']),
-                    'end' => \format_app_time($endedUnconfirmed['end_at']),
-                ]),
-                'recommendation' => __('assistant.rule.ended_unconfirmed.recommendation'),
-                'severity' => 'warning',
-            ];
-        }
-
         if ($summary['schedules_today_count'] === 0) {
             $suggestions[] = [
                 'title' => __('assistant.rule.no_schedules.title'),
                 'explanation' => __('assistant.rule.no_schedules.explanation'),
                 'recommendation' => __('assistant.rule.no_schedules.recommendation'),
-                'severity' => 'info',
-            ];
-        }
-
-        if ($summary['planned_today_minutes'] >= 120 && $summary['actual_today_minutes'] < (int) floor($summary['planned_today_minutes'] * 0.4)) {
-            $suggestions[] = [
-                'title' => __('assistant.rule.focus.title'),
-                'explanation' => __('assistant.rule.focus.explanation', [
-                    'planned' => $summary['planned_today_minutes'],
-                    'actual' => $summary['actual_today_minutes'],
-                ]),
-                'recommendation' => __('assistant.rule.focus.recommendation'),
                 'severity' => 'info',
             ];
         }
@@ -271,14 +227,13 @@ class SmartAssistantService
 
         if (
             $summary['schedules_today_count'] > 0
-            && $summary['time_logs_today_count'] > 0
-            && $summary['actual_today_minutes'] <= max($summary['planned_today_minutes'] + 30, 30)
+            && $summary['schedule_today_minutes'] <= max($summary['planned_today_minutes'] + 30, 30)
         ) {
             $suggestions[] = [
                 'title' => __('assistant.rule.tracking_success.title'),
                 'explanation' => __('assistant.rule.tracking_success.explanation', [
-                    'logs' => $summary['time_logs_today_count'],
-                    'actual' => $summary['actual_today_minutes'],
+                    'count' => $summary['schedules_today_count'],
+                    'minutes' => $summary['schedule_today_minutes'],
                 ]),
                 'recommendation' => __('assistant.rule.tracking_success.recommendation'),
                 'severity' => 'success',
@@ -328,42 +283,6 @@ class SmartAssistantService
         return (int) $statement->fetchColumn();
     }
 
-    private function actualMinutes(int $userId, string $startAt, string $endAt): int
-    {
-        $statement = $this->db->prepare(
-            'SELECT COALESCE(SUM(duration_minutes), 0)
-             FROM time_logs
-             WHERE user_id = :user_id
-                AND started_at >= :start_at
-                AND started_at < :end_at'
-        );
-        $statement->execute([
-            'user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
-        ]);
-
-        return (int) $statement->fetchColumn();
-    }
-
-    private function timeLogsCount(int $userId, string $startAt, string $endAt): int
-    {
-        $statement = $this->db->prepare(
-            'SELECT COUNT(*)
-             FROM time_logs
-             WHERE user_id = :user_id
-                AND started_at >= :start_at
-                AND started_at < :end_at'
-        );
-        $statement->execute([
-            'user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
-        ]);
-
-        return (int) $statement->fetchColumn();
-    }
-
     private function schedulesCount(int $userId, string $startAt, string $endAt): int
     {
         $statement = $this->db->prepare(
@@ -384,43 +303,47 @@ class SmartAssistantService
         return (int) $statement->fetchColumn();
     }
 
-    private function longestTimeLog(int $userId, string $startAt, string $endAt): ?array
+    private function longestSchedule(int $userId, string $startAt, string $endAt): ?array
     {
         $statement = $this->db->prepare(
-            'SELECT tl.duration_minutes, COALESCE(a.title, :fallback_title) AS activity_title
-             FROM time_logs tl
-             LEFT JOIN activities a ON a.id = tl.activity_id AND a.user_id = :activity_user_id
-             WHERE tl.user_id = :log_user_id
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
-             ORDER BY tl.duration_minutes DESC
+            'SELECT TIMESTAMPDIFF(MINUTE, s.start_at, s.end_at) AS duration_minutes,
+                    COALESCE(a.title, :fallback_title) AS activity_title
+             FROM schedules s
+             LEFT JOIN activities a ON a.id = s.activity_id AND a.user_id = :activity_user_id
+             WHERE s.user_id = :schedule_user_id
+                AND s.start_at >= :start_at
+                AND s.start_at < :end_at
+                AND s.status <> :cancelled_status
+             ORDER BY duration_minutes DESC
              LIMIT 1'
         );
         $statement->execute([
             'fallback_title' => __('assistant.unknown_activity'),
             'activity_user_id' => $userId,
-            'log_user_id' => $userId,
+            'schedule_user_id' => $userId,
             'start_at' => $startAt,
             'end_at' => $endAt,
+            'cancelled_status' => 'cancelled',
         ]);
 
-        $timeLog = $statement->fetch();
+        $schedule = $statement->fetch();
 
-        return $timeLog ?: null;
+        return $schedule ?: null;
     }
 
-    private function personalOrRecreationActualMinutes(int $userId, string $startAt, string $endAt): int
+    private function personalOrRecreationScheduleMinutes(int $userId, string $startAt, string $endAt): int
     {
         $statement = $this->db->prepare(
-            'SELECT COALESCE(SUM(tl.duration_minutes), 0) AS minutes
-             FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
+            'SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, s.start_at, s.end_at)), 0) AS minutes
+             FROM schedules s
+             INNER JOIN activities a ON a.id = s.activity_id
              INNER JOIN categories c ON c.id = a.category_id
-             WHERE tl.user_id = :log_user_id
+             WHERE s.user_id = :schedule_user_id
                 AND a.user_id = :activity_user_id
                 AND c.user_id = :category_user_id
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
+                AND s.start_at >= :start_at
+                AND s.start_at < :end_at
+                AND s.status <> :cancelled_status
                 AND LOWER(c.name) IN (
                     :personal_name,
                     :recreation_name,
@@ -430,11 +353,12 @@ class SmartAssistantService
                 )'
         );
         $statement->execute([
-            'log_user_id' => $userId,
+            'schedule_user_id' => $userId,
             'activity_user_id' => $userId,
             'category_user_id' => $userId,
             'start_at' => $startAt,
             'end_at' => $endAt,
+            'cancelled_status' => 'cancelled',
             'personal_name' => 'personal',
             'recreation_name' => 'recreation',
             'chill_name' => 'chill',
@@ -447,63 +371,7 @@ class SmartAssistantService
 
     private function dominantCategoryThisWeek(int $userId, string $startAt, string $endAt): ?array
     {
-        $actual = $this->dominantActualCategoryThisWeek($userId, $startAt, $endAt);
-
-        if ($actual !== null) {
-            return $actual;
-        }
-
         return $this->dominantPlannedCategoryThisWeek($userId, $startAt, $endAt);
-    }
-
-    private function dominantActualCategoryThisWeek(int $userId, string $startAt, string $endAt): ?array
-    {
-        $statement = $this->db->prepare(
-            'SELECT c.name, COALESCE(SUM(tl.duration_minutes), 0) AS minutes
-             FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
-             INNER JOIN categories c ON c.id = a.category_id
-             WHERE tl.user_id = :log_user_id
-                AND a.user_id = :activity_user_id
-                AND c.user_id = :category_user_id
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
-             GROUP BY c.id, c.name
-             ORDER BY minutes DESC
-             LIMIT 1'
-        );
-        $statement->execute([
-            'log_user_id' => $userId,
-            'activity_user_id' => $userId,
-            'category_user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
-        ]);
-
-        $category = $statement->fetch();
-
-        if (!$category) {
-            return null;
-        }
-
-        $total = $this->actualMinutes($userId, $startAt, $endAt);
-        $minutes = (int) $category['minutes'];
-
-        if ($total < 60 || $minutes < 60) {
-            return null;
-        }
-
-        $percent = (int) round(($minutes / max(1, $total)) * 100);
-
-        if ($percent < 60) {
-            return null;
-        }
-
-        return [
-            'name' => $category['name'],
-            'minutes' => $minutes,
-            'percent' => $percent,
-        ];
     }
 
     private function dominantPlannedCategoryThisWeek(int $userId, string $startAt, string $endAt): ?array
@@ -578,44 +446,6 @@ class SmartAssistantService
         ]);
 
         return $statement->fetchAll();
-    }
-
-    private function endedUnconfirmedSchedules(int $userId): ?array
-    {
-        $today = $this->todayRange();
-        $statement = $this->db->prepare(
-            'SELECT s.id, s.end_at, a.title AS activity_title
-             FROM schedules s
-             INNER JOIN activities a ON a.id = s.activity_id
-             WHERE s.user_id = :schedule_user_id
-                AND a.user_id = :activity_user_id
-                AND s.start_at >= :start_at
-                AND s.start_at < :end_at
-                AND s.end_at <= :now_at
-                AND s.status <> :cancelled_status
-                AND NOT EXISTS (
-                    SELECT 1
-                    FROM time_logs tl
-                    WHERE tl.schedule_id = s.id
-                        AND tl.user_id = :log_user_id
-                    LIMIT 1
-                )
-             ORDER BY s.end_at DESC
-             LIMIT 1'
-        );
-        $statement->execute([
-            'schedule_user_id' => $userId,
-            'activity_user_id' => $userId,
-            'start_at' => $today['start'],
-            'end_at' => $today['end'],
-            'now_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
-            'cancelled_status' => 'cancelled',
-            'log_user_id' => $userId,
-        ]);
-
-        $schedule = $statement->fetch();
-
-        return $schedule ?: null;
     }
 
     private function freeGapsToday(int $userId): array

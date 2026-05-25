@@ -132,11 +132,16 @@ if (!function_exists('display_note')) {
             return '';
         }
 
+        $legacyScheduleNoteEn = 'Automatically ' . 'recorded from ' . 'schedule';
+        $legacyScheduleNoteVi = 'Tự động ' . 'ghi nhận theo ' . 'lịch';
+
         $mappedNotes = [
             'Created from optimizer suggestion.' => __('note.created_from_optimizer'),
             'Tạo từ gợi ý tối ưu.' => __('note.created_from_optimizer'),
-            'Automatically recorded from schedule' => __('time_report.auto_note'),
-            'Tự động ghi nhận theo lịch' => __('time_report.auto_note'),
+            'Created from schedule' => __('time_report.auto_note'),
+            'Tạo từ lịch' => __('time_report.auto_note'),
+            $legacyScheduleNoteEn => __('time_report.auto_note'),
+            $legacyScheduleNoteVi => __('time_report.auto_note'),
             'Tạo từ chế độ tập trung' => __('note.created_from_focus'),
         ];
 

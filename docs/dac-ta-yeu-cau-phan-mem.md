@@ -11,8 +11,8 @@ Tên tiếng Việt của đề tài: **Xây dựng hệ thống tối ưu hóa 
 - Hỗ trợ người dùng đăng nhập và quản lý thông tin tài khoản cơ bản.
 - Cho phép phân loại hoạt động theo danh mục.
 - Cho phép tạo hoạt động, lập lịch, theo dõi lịch bằng danh sách và lịch tháng/tuần/ngày.
-- Ghi nhận thời gian thực tế đã sử dụng cho từng hoạt động.
-- Cung cấp Dashboard để tổng hợp thời gian kế hoạch, thời gian thực tế và cảnh báo cơ bản.
+- Sử dụng dữ liệu lịch đã lên làm dữ liệu thời gian chính thức cho từng hoạt động.
+- Cung cấp Dashboard để tổng hợp thời gian theo kế hoạch/lịch và cảnh báo cơ bản.
 - Hỗ trợ nhắc nhở, ngày quan trọng, Focus/Pomodoro và gợi ý tối ưu lịch theo khoảng trống.
 - Cung cấp trợ lý gợi ý thông minh theo luật đơn giản dựa trên dữ liệu hiện có.
 
@@ -44,7 +44,7 @@ Phạm vi hiện tại bao gồm:
 - Lập lịch, xem lịch bằng FullCalendar và API JSON cho sự kiện lịch.
 - Nhắc nhở cá nhân và API nhắc nhở trong ngày.
 - Quản lý ngày quan trọng và hiển thị lên lịch.
-- Ghi nhận thời gian thực tế.
+- Báo cáo nhật ký thời gian dựa trên dữ liệu lịch.
 - Focus/Pomodoro và lưu phiên tập trung thành nhật ký thời gian.
 - Tối ưu lịch bằng phân tích khoảng trống theo luật.
 - Trợ lý gợi ý thông minh dựa trên dữ liệu lịch, nhật ký, nhắc nhở và ngày quan trọng.
@@ -68,10 +68,10 @@ Ngoài phạm vi hiện tại:
 
 ### 6.2 Dashboard
 
-- Hiển thị tổng thời gian kế hoạch và thực tế trong ngày/tuần.
-- Hiển thị số hoạt động đang dùng, số lịch đã lên, số nhật ký trong ngày và số phiên tập trung.
+- Hiển thị tổng thời gian kế hoạch/lịch trong ngày/tuần.
+- Hiển thị số hoạt động đang dùng, số lịch đã lên và số phiên tập trung.
 - Thống kê thời gian theo danh mục.
-- Hiển thị cảnh báo khi thời gian thực tế vượt kế hoạch, chưa có nhật ký trong ngày hoặc thời gian cá nhân/giải trí vượt ngưỡng.
+- Hiển thị cảnh báo khi thời gian cá nhân/giải trí theo lịch vượt ngưỡng.
 - Hiển thị gợi ý phụ trợ từ nhắc nhở và ngày quan trọng sắp tới.
 
 ### 6.3 Quản lý danh mục
@@ -119,13 +119,12 @@ Ngoài phạm vi hiện tại:
 - Có số ngày nhắc trước và tùy chọn lặp hằng năm.
 - Ngày quan trọng được đưa vào dữ liệu Calendar.
 
-### 6.9 Ghi nhận thời gian thực tế
+### 6.9 Báo cáo nhật ký thời gian
 
 - Xem báo cáo nhật ký thời gian theo ngày.
-- Thêm, sửa, xóa nhật ký thời gian.
-- Mỗi nhật ký có thể gắn với hoạt động và có thể liên kết với lịch.
-- Hệ thống tự tính `duration_minutes` từ thời gian bắt đầu và kết thúc thực tế.
-- Có chức năng xác nhận lịch đã hoàn thành thành một nhật ký thời gian.
+- Báo cáo hiển thị dữ liệu từ lịch đã tạo: hoạt động, danh mục, thời gian kế hoạch, thời lượng kế hoạch và ghi chú.
+- Trang báo cáo không yêu cầu người dùng nhập thêm dữ liệu sau khi tạo lịch.
+- Chức năng đặt lại nhật ký thời gian chỉ xóa dữ liệu `time_logs`, không làm mất dữ liệu lịch.
 
 ### 6.10 Focus/Pomodoro
 
@@ -146,7 +145,7 @@ Ngoài phạm vi hiện tại:
 ### 6.12 Trợ lý gợi ý thông minh
 
 - Trợ lý dùng các luật đơn giản, không dùng machine learning.
-- Phân tích kế hoạch, nhật ký thời gian, lịch chưa xác nhận, nhắc nhở, ngày quan trọng và khoảng trống.
+- Phân tích lịch hiện có, phân bố hoạt động/danh mục, nhắc nhở, ngày quan trọng và khoảng trống.
 - Trả về các gợi ý dạng cảnh báo, thông tin hoặc khuyến nghị.
 
 ## 7. Yêu cầu phi chức năng
@@ -189,7 +188,7 @@ Lưu ngày quan trọng, gồm tiêu đề, ngày sự kiện, loại ngày, ghi
 
 ### 8.7 time_logs
 
-Lưu thời gian thực tế, liên kết với người dùng, hoạt động và tùy chọn liên kết với lịch. Bảng này lưu thời gian bắt đầu, kết thúc, thời lượng phút và ghi chú.
+Lưu dữ liệu nhật ký thời gian lịch sử, liên kết với người dùng, hoạt động và tùy chọn liên kết với lịch. Báo cáo hiện tại ưu tiên đọc trực tiếp từ bảng `schedules`.
 
 ## 9. Luồng xử lý chính
 
@@ -217,13 +216,12 @@ Lưu thời gian thực tế, liên kết với người dùng, hoạt động v
 3. Lịch được lưu vào bảng `schedules`.
 4. Lịch xuất hiện trong danh sách lịch và Calendar.
 
-### 9.4 Luồng ghi nhận thời gian thực tế
+### 9.4 Luồng báo cáo nhật ký thời gian
 
-1. Người dùng tạo nhật ký thời gian hoặc xác nhận từ một lịch đã có.
+1. Người dùng tạo lịch với thời gian bắt đầu và kết thúc.
 2. Hệ thống kiểm tra thời gian kết thúc sau thời gian bắt đầu.
-3. Hệ thống tự tính số phút thực tế.
-4. Nhật ký được lưu vào `time_logs`.
-5. Dashboard và báo cáo nhật ký sử dụng dữ liệu này để tổng hợp.
+3. Lịch được lưu vào `schedules`.
+4. Dashboard, thời gian biểu, lịch tháng và báo cáo nhật ký dùng thời gian trong lịch để tổng hợp.
 
 ### 9.5 Luồng Focus/Pomodoro
 
@@ -244,8 +242,8 @@ Lưu thời gian thực tế, liên kết với người dùng, hoạt động v
 ### 9.7 Luồng trợ lý gợi ý thông minh
 
 1. Người dùng mở trang trợ lý.
-2. Hệ thống đọc dữ liệu lịch, nhật ký, nhắc nhở và ngày quan trọng.
-3. Dịch vụ áp dụng các luật kiểm tra như quá tải, thiếu nhật ký, lịch chưa xác nhận hoặc còn khoảng trống.
+2. Hệ thống đọc dữ liệu lịch, nhắc nhở và ngày quan trọng.
+3. Dịch vụ áp dụng các luật kiểm tra như quá tải theo lịch, phân bố danh mục hoặc còn khoảng trống.
 4. Hệ thống hiển thị các gợi ý và khuyến nghị.
 
 ## 10. Giới hạn hiện tại của hệ thống

@@ -28,7 +28,7 @@ class DashboardController extends Controller
     {
         $threshold = $this->personalThresholdMinutes();
         $summary = $this->dashboard->summary($this->authUserId());
-        $personalMinutes = $this->dashboard->personalOrRecreationActualMinutesToday($this->authUserId());
+        $personalMinutes = $this->dashboard->personalOrRecreationScheduleMinutesToday($this->authUserId());
         $alerts = $this->alerts($summary, $personalMinutes, $threshold);
         $productivityScore = $this->productivityScore($summary, $personalMinutes, $threshold);
 
@@ -36,10 +36,10 @@ class DashboardController extends Controller
             'title' => \__('nav.dashboard'),
             'summary' => $summary,
             'plannedByCategory' => $this->dashboard->plannedMinutesByCategoryThisWeek($this->authUserId()),
-            'actualByCategory' => $this->dashboard->actualMinutesByCategoryThisWeek($this->authUserId()),
+            'scheduleByCategory' => $this->dashboard->scheduleMinutesByCategoryThisWeek($this->authUserId()),
             'alerts' => $alerts,
             'personalThresholdMinutes' => $threshold,
-            'personalActualMinutes' => $personalMinutes,
+            'personalScheduleMinutes' => $personalMinutes,
             'productivityScore' => $productivityScore,
             'productivityBadges' => $this->productivityBadges($summary, $alerts),
             'upcomingReminders' => $this->reminders->upcomingToday($this->authUserId(), 4),
@@ -58,29 +58,10 @@ class DashboardController extends Controller
     {
         $alerts = [];
 
-        if ($summary['actual_today_minutes'] > $summary['planned_today_minutes']) {
-            $alerts[] = [
-                'type' => 'danger',
-                'message' => \__('alert.actual_over_planned'),
-            ];
-        }
-
         if ($personalMinutes > $threshold) {
             $alerts[] = [
                 'type' => 'warning',
                 'message' => \__('alert.personal_threshold_exceeded'),
-            ];
-        }
-
-        if ($summary['planned_today_minutes'] > 0 && $summary['time_logs_today_count'] === 0) {
-            $alerts[] = [
-                'type' => 'warning',
-                'message' => \__('alert.planned_without_actual'),
-            ];
-        } elseif ($summary['time_logs_today_count'] === 0) {
-            $alerts[] = [
-                'type' => 'warning',
-                'message' => \__('alert.no_logs_today'),
             ];
         }
 
@@ -92,17 +73,17 @@ class DashboardController extends Controller
         $score = 50;
         $rules = [];
         $plannedMinutes = (int) $summary['planned_today_minutes'];
-        $actualMinutes = (int) $summary['actual_today_minutes'];
-        $actualOverPlanned = $actualMinutes - $plannedMinutes;
+        $scheduleMinutes = (int) $summary['schedule_today_minutes'];
+        $scheduleOverPlanned = $scheduleMinutes - $plannedMinutes;
         $closeThreshold = $plannedMinutes > 0 ? max(15, (int) round($plannedMinutes * 0.2)) : 0;
 
-        if ((int) $summary['time_logs_today_count'] > 0) {
+        if ((int) $summary['scheduled_today_count'] > 0) {
             $score += 15;
             $rules[] = $this->scoreRule('dashboard.score.rule.logged', 15, 'positive');
         }
 
-        if ($plannedMinutes > 0 && $actualMinutes > 0) {
-            $difference = abs($actualMinutes - $plannedMinutes);
+        if ($plannedMinutes > 0 && $scheduleMinutes > 0) {
+            $difference = abs($scheduleMinutes - $plannedMinutes);
 
             if ($difference <= $closeThreshold) {
                 $score += 20;
@@ -117,8 +98,8 @@ class DashboardController extends Controller
 
         if (
             $plannedMinutes > 0
-            && $actualOverPlanned > $closeThreshold
-            && ($actualOverPlanned >= 90 || $actualMinutes >= (int) ceil($plannedMinutes * 1.5))
+            && $scheduleOverPlanned > $closeThreshold
+            && ($scheduleOverPlanned >= 90 || $scheduleMinutes >= (int) ceil($plannedMinutes * 1.5))
         ) {
             $score -= 20;
             $rules[] = $this->scoreRule('dashboard.score.rule.over_planned', -20, 'negative');
@@ -147,7 +128,7 @@ class DashboardController extends Controller
             $badges[] = ['label' => __('dashboard.badge.planned'), 'type' => 'info'];
         }
 
-        if ((int) $summary['time_logs_today_count'] > 0) {
+        if ((int) $summary['scheduled_today_count'] > 0) {
             $badges[] = ['label' => __('dashboard.badge.logged'), 'type' => 'success'];
         }
 

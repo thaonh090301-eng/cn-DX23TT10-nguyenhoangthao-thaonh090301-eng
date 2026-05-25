@@ -1,12 +1,12 @@
 <?php
 $formatTime = static function (mixed $value): string {
     if ($value === null || $value === '') {
-        return __('time_report.not_recorded');
+        return '-';
     }
 
     return format_app_time($value);
 };
-$formatMinutes = static fn (mixed $value): string => $value === null ? __('time_report.not_recorded') : format_duration_minutes($value);
+$formatMinutes = static fn (mixed $value): string => $value === null ? '-' : format_duration_minutes($value);
 ?>
 <!doctype html>
 <html lang="<?= $e(\App\Core\Lang::locale()) ?>">

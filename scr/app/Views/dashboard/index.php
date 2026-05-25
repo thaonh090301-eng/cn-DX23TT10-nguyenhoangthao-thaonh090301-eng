@@ -1,15 +1,15 @@
 <?php
 $summaryCards = [
     ['label' => __('dashboard.planned_today'), 'value' => $summary['planned_today_minutes'], 'suffix' => __('unit.min')],
-    ['label' => __('dashboard.actual_today'), 'value' => $summary['actual_today_minutes'], 'suffix' => __('unit.min')],
+    ['label' => __('dashboard.schedule_today'), 'value' => $summary['schedule_today_minutes'], 'suffix' => __('unit.min')],
     ['label' => __('dashboard.planned_week'), 'value' => $summary['planned_week_minutes'], 'suffix' => __('unit.min')],
-    ['label' => __('dashboard.actual_week'), 'value' => $summary['actual_week_minutes'], 'suffix' => __('unit.min')],
+    ['label' => __('dashboard.schedule_week'), 'value' => $summary['schedule_week_minutes'], 'suffix' => __('unit.min')],
     ['label' => __('dashboard.active_activities'), 'value' => $summary['active_activities_count'], 'suffix' => ''],
     ['label' => __('dashboard.scheduled_items'), 'value' => $summary['scheduled_items_count'], 'suffix' => ''],
 ];
 
 $plannedMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minutes'], $plannedByCategory));
-$actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minutes'], $actualByCategory));
+$scheduleMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minutes'], $scheduleByCategory));
 ?>
 <!doctype html>
 <html lang="<?= $e(\App\Core\Lang::locale()) ?>">
@@ -95,7 +95,7 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
                     <h2><?= $e(__('section.today')) ?></h2>
                 </div>
                 <span class="threshold-note">
-                    <?= $e(__('dashboard.personal_threshold', ['actual' => $personalActualMinutes, 'threshold' => $personalThresholdMinutes])) ?>
+                    <?= $e(__('dashboard.personal_threshold', ['minutes' => $personalScheduleMinutes, 'threshold' => $personalThresholdMinutes])) ?>
                 </span>
             </div>
 
@@ -219,13 +219,13 @@ $actualMax = max(1, ...array_map(static fn (array $row): int => (int) $row['minu
                 <div class="section-heading">
                     <div>
                         <p class="eyebrow"><?= $e(__('section.this_week')) ?></p>
-                        <h2><?= $e(__('dashboard.actual_by_category')) ?></h2>
+                        <h2><?= $e(__('dashboard.schedule_by_category')) ?></h2>
                     </div>
                 </div>
 
                 <div class="category-stats">
-                    <?php foreach ($actualByCategory as $category): ?>
-                        <?php $width = ((int) $category['minutes'] / $actualMax) * 100; ?>
+                    <?php foreach ($scheduleByCategory as $category): ?>
+                        <?php $width = ((int) $category['minutes'] / $scheduleMax) * 100; ?>
                         <div class="category-row">
                             <div class="category-meta">
                                 <span>

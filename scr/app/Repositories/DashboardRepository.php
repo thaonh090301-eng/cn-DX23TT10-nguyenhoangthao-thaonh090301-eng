@@ -24,13 +24,12 @@ class DashboardRepository
 
         return [
             'planned_today_minutes' => $this->plannedMinutes($userId, $today['start'], $today['end']),
-            'actual_today_minutes' => $this->actualMinutes($userId, $today['start'], $today['end']),
+            'schedule_today_minutes' => $this->plannedMinutes($userId, $today['start'], $today['end']),
             'planned_week_minutes' => $this->plannedMinutes($userId, $week['start'], $week['end']),
-            'actual_week_minutes' => $this->actualMinutes($userId, $week['start'], $week['end']),
+            'schedule_week_minutes' => $this->plannedMinutes($userId, $week['start'], $week['end']),
             'active_activities_count' => $this->activeActivitiesCount($userId),
             'scheduled_items_count' => $this->scheduledItemsCount($userId),
             'scheduled_today_count' => $this->schedulesCount($userId, $today['start'], $today['end']),
-            'time_logs_today_count' => $this->timeLogsCount($userId, $today['start'], $today['end']),
             'focus_logs_today_count' => $this->focusLogsCount($userId, $today['start'], $today['end']),
         ];
     }
@@ -73,50 +72,25 @@ class DashboardRepository
         return $statement->fetchAll();
     }
 
-    public function actualMinutesByCategoryThisWeek(int $userId): array
+    public function scheduleMinutesByCategoryThisWeek(int $userId): array
     {
-        $week = $this->weekRange();
-        $statement = $this->db->prepare(
-            'SELECT c.id,
-                    c.name,
-                    c.color,
-                    COALESCE(SUM(tl.duration_minutes), 0) AS minutes
-             FROM categories c
-             LEFT JOIN activities a
-                ON a.category_id = c.id AND a.user_id = :activity_user_id
-             LEFT JOIN time_logs tl
-                ON tl.activity_id = a.id
-                AND tl.user_id = :log_user_id
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
-             WHERE c.user_id = :category_user_id
-             GROUP BY c.id, c.name, c.color
-             ORDER BY minutes DESC, c.name ASC'
-        );
-        $statement->execute([
-            'activity_user_id' => $userId,
-            'log_user_id' => $userId,
-            'category_user_id' => $userId,
-            'start_at' => $week['start'],
-            'end_at' => $week['end'],
-        ]);
-
-        return $statement->fetchAll();
+        return $this->plannedMinutesByCategoryThisWeek($userId);
     }
 
-    public function personalOrRecreationActualMinutesToday(int $userId): int
+    public function personalOrRecreationScheduleMinutesToday(int $userId): int
     {
         $today = $this->todayRange();
         $statement = $this->db->prepare(
-            'SELECT COALESCE(SUM(tl.duration_minutes), 0) AS minutes
-             FROM time_logs tl
-             INNER JOIN activities a ON a.id = tl.activity_id
+            'SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, s.start_at, s.end_at)), 0) AS minutes
+             FROM schedules s
+             INNER JOIN activities a ON a.id = s.activity_id
              INNER JOIN categories c ON c.id = a.category_id
-             WHERE tl.user_id = :log_user_id
+             WHERE s.user_id = :schedule_user_id
                 AND a.user_id = :activity_user_id
                 AND c.user_id = :category_user_id
-                AND tl.started_at >= :start_at
-                AND tl.started_at < :end_at
+                AND s.start_at >= :start_at
+                AND s.start_at < :end_at
+                AND s.status <> :cancelled_status
                 AND LOWER(c.name) IN (
                     :personal_name,
                     :recreation_name,
@@ -126,11 +100,12 @@ class DashboardRepository
                 )'
         );
         $statement->execute([
-            'log_user_id' => $userId,
+            'schedule_user_id' => $userId,
             'activity_user_id' => $userId,
             'category_user_id' => $userId,
             'start_at' => $today['start'],
             'end_at' => $today['end'],
+            'cancelled_status' => 'cancelled',
             'personal_name' => 'personal',
             'recreation_name' => 'recreation',
             'chill_name' => 'chill',
@@ -156,42 +131,6 @@ class DashboardRepository
             'start_at' => $startAt,
             'end_at' => $endAt,
             'cancelled_status' => 'cancelled',
-        ]);
-
-        return (int) $statement->fetchColumn();
-    }
-
-    private function actualMinutes(int $userId, string $startAt, string $endAt): int
-    {
-        $statement = $this->db->prepare(
-            'SELECT COALESCE(SUM(duration_minutes), 0)
-             FROM time_logs
-             WHERE user_id = :user_id
-                AND started_at >= :start_at
-                AND started_at < :end_at'
-        );
-        $statement->execute([
-            'user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
-        ]);
-
-        return (int) $statement->fetchColumn();
-    }
-
-    private function timeLogsCount(int $userId, string $startAt, string $endAt): int
-    {
-        $statement = $this->db->prepare(
-            'SELECT COUNT(*)
-             FROM time_logs
-             WHERE user_id = :user_id
-                AND started_at >= :start_at
-                AND started_at < :end_at'
-        );
-        $statement->execute([
-            'user_id' => $userId,
-            'start_at' => $startAt,
-            'end_at' => $endAt,
         ]);
 
         return (int) $statement->fetchColumn();

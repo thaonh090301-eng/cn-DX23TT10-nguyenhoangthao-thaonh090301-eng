@@ -74,7 +74,7 @@ VALUES (
     TIMESTAMP(CURDATE(), '08:05:00'),
     TIMESTAMP(CURDATE(), '09:20:00'),
     75,
-    'Sample actual time log.'
+    'Sample schedule-linked time log.'
 );
 
 INSERT INTO reminders (user_id, title, note, remind_time, repeat_type, day_of_week, is_active)
